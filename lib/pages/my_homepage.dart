@@ -1,12 +1,14 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
-// import 'package:audioplayers/audioplayers.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:stsl/services/audio_player.dart';
 import 'package:stsl/services/audio_recorder.dart';
-
-import '../services/format_time.dart';
+import 'package:http/http.dart' as http;
+import 'package:stsl/services/format_time.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -18,6 +20,40 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  //--------------------------------------------//
+  // ///////////////
+  File? selectedFile;
+  selectSpeech() async {
+    log("inside selectSpeech\n");
+    final pickedFile = await FilePicker.platform.pickFiles();
+    if (pickedFile != null) {
+      selectedFile = File(pickedFile.files.single.path!);
+    }
+  }
+
+// ///////////////
+  String message = "";
+  String uri = " https://5997-39-46-123-229.in.ngrok.io/upload/";
+
+  uploadFile() async {
+    final request = http.MultipartRequest(
+        "POST", Uri.parse("https://5997-39-46-123-229.in.ngrok.io/upload"));
+    final headers = {"Content-type": " multipart/form-data"};
+    if (selectedFile != null) {
+      request.files.add(http.MultipartFile('speech',
+          selectedFile!.readAsBytes().asStream(), selectedFile!.lengthSync(),
+          filename: selectedFile!.path.split('/').last));
+    }
+
+    request.headers.addAll(headers);
+    final response = await request.send();
+    http.Response res = await http.Response.fromStream(response);
+    final resJson = jsonDecode(res.body);
+    message = resJson['message'];
+    log(message);
+  }
+//--------------------------------------------//
+
   @override
   void initState() {
     super.initState();
@@ -117,6 +153,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   Text(FormatTime.formatTime(AudioPlay.duration)),
                 ],
+              ),
+            ),
+            TextButton(
+              onPressed: () => uploadFile(),
+              child: const Text(
+                "Upload Speech",
+              ),
+            ),
+            TextButton(
+              onPressed: () => selectSpeech(),
+              child: const Text(
+                "Select Speech",
               ),
             ),
           ],

@@ -43,6 +43,9 @@ dependencies:
   permission_handler: ^10.2.0
   audioplayers: ^3.0.1
   path_provider: ^2.0.12
+  http: ^0.13.5
+  async: ^2.8.2
+  path: ^1.8.1
 
 dev_dependencies:
   flutter_test:
