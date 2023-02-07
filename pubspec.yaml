@@ -46,6 +46,7 @@ dependencies:
   http: ^0.13.5
   async: ^2.8.2
   path: ^1.8.1
+  file_manager: ^1.0.1
 
 dev_dependencies:
   flutter_test:

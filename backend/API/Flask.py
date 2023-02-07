@@ -13,7 +13,7 @@ def uplaod():
         speech = request.files['speech']
         filename = werkzeug.utils.secure_filename(speech.filename)
         speech.save('./audio/'+filename)
-        return jsonify({"message": "File uploaded successfully khi khi"})
+        return jsonify({"message": "File uploaded successfully"})
 
 if __name__ == "__main__":
     app.run(debug = True, port = 4000)

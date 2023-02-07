@@ -9,6 +9,7 @@ import 'package:stsl/services/audio_player.dart';
 import 'package:stsl/services/audio_recorder.dart';
 import 'package:http/http.dart' as http;
 import 'package:stsl/services/format_time.dart';
+import 'package:stsl/services/upload_file.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -27,7 +28,9 @@ class _MyHomePageState extends State<MyHomePage> {
     log("inside selectSpeech\n");
     final pickedFile = await FilePicker.platform.pickFiles();
     if (pickedFile != null) {
-      selectedFile = File(pickedFile.files.single.path!);
+      selectedFile = File(
+          '/storage/emulated/0/Android/data/com.example.stsl/files/audio.wav');
+      // selectedFile = File(pickedFile.files.single.path!);
     }
   }
 
@@ -36,8 +39,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String uri = " https://5997-39-46-123-229.in.ngrok.io/upload/";
 
   uploadFile() async {
-    final request = http.MultipartRequest(
-        "POST", Uri.parse("https://5997-39-46-123-229.in.ngrok.io/upload"));
+    final request =
+        http.MultipartRequest("POST", Uri.parse("http://10.0.2.2:4000/upload"));
     final headers = {"Content-type": " multipart/form-data"};
     if (selectedFile != null) {
       request.files.add(http.MultipartFile('speech',
@@ -156,17 +159,17 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             TextButton(
-              onPressed: () => uploadFile(),
+              onPressed: () => UploadFile.uploadFile(),
               child: const Text(
                 "Upload Speech",
               ),
             ),
-            TextButton(
-              onPressed: () => selectSpeech(),
-              child: const Text(
-                "Select Speech",
-              ),
-            ),
+            // TextButton(
+            //   onPressed: () => selectSpeech(),
+            //   child: const Text(
+            //     "Select Speech",
+            //   ),
+            // ),
           ],
         ),
       ),
