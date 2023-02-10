@@ -14,7 +14,10 @@ class LocalVideoPlayer {
     Uint8List bytes = base64.decode(UploadFile.message);
     String dir = (await getExternalStorageDirectory())!.path;
     File file = File("$dir/STSL.mp4");
-    await file.writeAsBytes(bytes);
+    if (bytes.isNotEmpty) {
+      await file.writeAsBytes(bytes);
+    }
+
     final VideoPlayerController controller = VideoPlayerController.file(file);
     await controller.initialize();
     await controller.setLooping(true);
