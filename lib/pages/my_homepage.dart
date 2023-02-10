@@ -1,15 +1,17 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:path_provider/path_provider.dart';
+// import 'package:sagae/core/util/image_b64_decoder.dart';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:stsl/services/audio_player.dart';
 import 'package:stsl/services/audio_recorder.dart';
-import 'package:http/http.dart' as http;
 import 'package:stsl/services/format_time.dart';
 import 'package:stsl/services/upload_file.dart';
+import 'package:video_player/video_player.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -20,42 +22,28 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+String message = "";
+
 class _MyHomePageState extends State<MyHomePage> {
-  //--------------------------------------------//
-  // ///////////////
-  File? selectedFile;
-  selectSpeech() async {
-    log("inside selectSpeech\n");
-    final pickedFile = await FilePicker.platform.pickFiles();
-    if (pickedFile != null) {
-      selectedFile = File(
-          '/storage/emulated/0/Android/data/com.example.stsl/files/audio.wav');
-      // selectedFile = File(pickedFile.files.single.path!);
-    }
-  }
+  // Future<VideoPlayerController>? _futureController;
+  // VideoPlayerController? _controller;
+  // Future<VideoPlayerController> createVideoPlayer() async {
+  //   // Uint8List bytes = base64Decode(UploadFile.message);
 
-// ///////////////
-  String message = "";
-  String uri = " https://5997-39-46-123-229.in.ngrok.io/upload/";
+  //   // final File file = await Image.memory(bytes) as File;
+  //   // final File file = await ImgB64Decoder.fileFromB64String(UploadFile.message);
+  //   Uint8List bytes = base64.decode(UploadFile.message);
+  //   String dir = (await getApplicationDocumentsDirectory()).path;
+  //   File file = File(
+  //       "$dir/" + DateTime.now().millisecondsSinceEpoch.toString() + ".mp4");
+  //   await file.writeAsBytes(bytes);
+  //   log("${file.path}");
 
-  uploadFile() async {
-    final request =
-        http.MultipartRequest("POST", Uri.parse("http://10.0.2.2:4000/upload"));
-    final headers = {"Content-type": " multipart/form-data"};
-    if (selectedFile != null) {
-      request.files.add(http.MultipartFile('speech',
-          selectedFile!.readAsBytes().asStream(), selectedFile!.lengthSync(),
-          filename: selectedFile!.path.split('/').last));
-    }
-
-    request.headers.addAll(headers);
-    final response = await request.send();
-    http.Response res = await http.Response.fromStream(response);
-    final resJson = jsonDecode(res.body);
-    message = resJson['message'];
-    log(message);
-  }
-//--------------------------------------------//
+  //   final VideoPlayerController controller = VideoPlayerController.file(file);
+  //   await controller.initialize();
+  //   await controller.setLooping(true);
+  //   return controller;
+  // }
 
   @override
   void initState() {
@@ -164,12 +152,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 "Upload Speech",
               ),
             ),
-            // TextButton(
-            //   onPressed: () => selectSpeech(),
-            //   child: const Text(
-            //     "Select Speech",
-            //   ),
-            // ),
           ],
         ),
       ),

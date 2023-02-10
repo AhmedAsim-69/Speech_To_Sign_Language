@@ -47,6 +47,8 @@ dependencies:
   async: ^2.8.2
   path: ^1.8.1
   file_manager: ^1.0.1
+  video_player: ^2.5.1
+  basic_utils: ^5.4.2
 
 dev_dependencies:
   flutter_test:
