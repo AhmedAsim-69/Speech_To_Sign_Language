@@ -1,16 +1,10 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:path_provider/path_provider.dart';
-// import 'package:sagae/core/util/image_b64_decoder.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:stsl/services/audio_player.dart';
 import 'package:stsl/services/audio_recorder.dart';
 import 'package:stsl/services/format_time.dart';
 import 'package:stsl/services/upload_file.dart';
+import 'package:stsl/services/video_player.dart';
 import 'package:video_player/video_player.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -22,33 +16,11 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-String message = "";
-
 class _MyHomePageState extends State<MyHomePage> {
-  // Future<VideoPlayerController>? _futureController;
-  // VideoPlayerController? _controller;
-  // Future<VideoPlayerController> createVideoPlayer() async {
-  //   // Uint8List bytes = base64Decode(UploadFile.message);
-
-  //   // final File file = await Image.memory(bytes) as File;
-  //   // final File file = await ImgB64Decoder.fileFromB64String(UploadFile.message);
-  //   Uint8List bytes = base64.decode(UploadFile.message);
-  //   String dir = (await getApplicationDocumentsDirectory()).path;
-  //   File file = File(
-  //       "$dir/" + DateTime.now().millisecondsSinceEpoch.toString() + ".mp4");
-  //   await file.writeAsBytes(bytes);
-  //   log("${file.path}");
-
-  //   final VideoPlayerController controller = VideoPlayerController.file(file);
-  //   await controller.initialize();
-  //   await controller.setLooping(true);
-  //   return controller;
-  // }
-
   @override
   void initState() {
     super.initState();
-    log("before\n");
+
     AudioRecorder.initRecorder();
     AudioPlay.setAudio();
     AudioPlay.audioPlayer.onPlayerStateChanged.listen((state) {
@@ -66,12 +38,13 @@ class _MyHomePageState extends State<MyHomePage> {
         AudioPlay.position = newPosition;
       });
     });
-    log("after\n");
+    LocalVideoPlayer.futureController = LocalVideoPlayer.createVideoPlayer();
   }
 
   @override
   void dispose() {
     AudioRecorder.recorder.closeRecorder();
+    LocalVideoPlayer.controller!.dispose();
     super.dispose();
   }
 
@@ -152,6 +125,47 @@ class _MyHomePageState extends State<MyHomePage> {
                 "Upload Speech",
               ),
             ),
+            Expanded(
+              child: FutureBuilder(
+                future: LocalVideoPlayer.futureController,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    LocalVideoPlayer.controller =
+                        snapshot.data as VideoPlayerController;
+                    return Column(
+                      children: [
+                        AspectRatio(
+                          aspectRatio: (16 / 9),
+                          child: VideoPlayer(LocalVideoPlayer.controller!),
+                        ),
+                        FloatingActionButton(
+                          onPressed: () {
+                            setState(() {
+                              if (LocalVideoPlayer
+                                  .controller!.value.isPlaying) {
+                                LocalVideoPlayer.controller!.pause();
+                              } else {
+                                LocalVideoPlayer.controller!.play();
+                              }
+                            });
+                          },
+                          backgroundColor:
+                              const Color.fromARGB(255, 79, 168, 197),
+                          foregroundColor: Colors.black,
+                          child: Icon(
+                            LocalVideoPlayer.controller!.value.isPlaying
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                          ),
+                        )
+                      ],
+                    );
+                  } else {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
+            )
           ],
         ),
       ),
