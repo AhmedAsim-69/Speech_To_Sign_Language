@@ -13,6 +13,10 @@ class AudioRecorder {
 
   static Future stopRecording() async {
     if (!isRecorderReady) return;
+    // final path = await recorder.stopRecorder();
+    await recorder.stopRecorder();
+    // final audioFile = File(path!);
+    // final directory = await getExternalStorageDirectory();
   }
 
   static Future initRecorder() async {
