@@ -38,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
         AudioPlay.position = newPosition;
       });
     });
-    LocalVideoPlayer.futureController = LocalVideoPlayer.createVideoPlayer();
+    // LocalVideoPlayer.futureController = LocalVideoPlayer.createVideoPlayer();
   }
 
   @override

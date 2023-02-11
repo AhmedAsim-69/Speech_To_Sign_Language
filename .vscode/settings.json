@@ -1,3 +1,7 @@
 {
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "python.analysis.extraPaths": [
+        "./backend/speech_processing",
+        "./backend/speech_processing"
+    ]
 }

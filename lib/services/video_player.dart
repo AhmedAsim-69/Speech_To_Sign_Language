@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -17,10 +16,10 @@ class LocalVideoPlayer {
     if (bytes.isNotEmpty) {
       await file.writeAsBytes(bytes);
     }
-
     final VideoPlayerController controller = VideoPlayerController.file(file);
     await controller.initialize();
     await controller.setLooping(true);
+
     return controller;
   }
 }

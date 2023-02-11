@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
@@ -9,8 +10,8 @@ class UploadFile {
   static uploadFile() async {
     File selectedFile = File(
         '/storage/emulated/0/Android/data/com.example.stsl/files/audio.wav');
-    final request =
-        http.MultipartRequest("POST", Uri.parse("http://10.0.2.2:4000/upload"));
+    final request = http.MultipartRequest(
+        "POST", Uri.parse("https://e5e7-39-46-123-229.in.ngrok.io/upload"));
     final headers = {
       "Content-type": " multipart/form-data",
       "Connection": "Keep-Alive"
@@ -24,6 +25,8 @@ class UploadFile {
     http.Response res = await http.Response.fromStream(response);
     final resJson = jsonDecode(res.body);
     message = resJson['message'];
+    log(message);
+    LocalVideoPlayer.futureController = LocalVideoPlayer.createVideoPlayer();
     LocalVideoPlayer.createVideoPlayer();
   }
 }

@@ -16,12 +16,22 @@ import speech_recognition as sr
 from googletrans import Translator
 from gtts import gTTS
 
-def processing(audio):
+
+
+
+def processing():
     def takecommand():
         r = sr.Recognizer()
+        hello = sr.AudioFile(r'D:\FYP APP\STSL - APP\stsl\backend\API\audio\audio.wav')
+        with hello as source:
+            audio1 = r.record(source)
+        # with sr.Microphone() as source:
+        #     print("Listening to user speech.....")
+        #     r.pause_threshold = 1
+        #     audio1 = r.listen(source, 0, 4)
         try:
             print("Recognizing the speech input.....")
-            temp = r.recognize_google(audio, language='en-US')
+            temp = r.recognize_google(audio1, language='en-US')
             print("\n-----------------------------------------")
             print(f"The User said: {temp}.")
             print("-----------------------------------------\n")
@@ -85,18 +95,3 @@ def processing(audio):
             print("File ", x, ".mp4 not found")
             continue
     final.write_videofile(r"D:\FYP APP\STSL - APP\stsl\backend\API\video\merged.mp4")
-    
-    cap = cv2.VideoCapture('merged.mp4')
-    if (cap.isOpened() == False):
-        print("Error opening video file")
-    while(cap.isOpened()):
-        ret, frame = cap.read()
-        if ret == True:
-            cv2.imshow('Frame', frame)
-            if cv2.waitKey(25) & 0xFF == ord('q'):
-                break
-        else:
-            break
-    cap.release()
-    cv2.destroyAllWindows()
-    
