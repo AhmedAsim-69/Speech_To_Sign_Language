@@ -5,18 +5,19 @@ import 'package:stsl/services/audio_recorder.dart';
 import 'package:stsl/services/format_time.dart';
 import 'package:stsl/services/upload_file.dart';
 import 'package:stsl/services/video_player.dart';
+import 'package:stsl/widgets/snackbar.dart';
 import 'package:video_player/video_player.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class SpeechPage extends StatefulWidget {
+  const SpeechPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SpeechPage> createState() => _SpeechPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _SpeechPageState extends State<SpeechPage> {
   @override
   void initState() {
     super.initState();
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     AudioRecorder.recorder.closeRecorder();
-    LocalVideoPlayer.controller!.dispose();
+    // LocalVideoPlayer.controller!.dispose();
     super.dispose();
   }
 
@@ -141,6 +142,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         FloatingActionButton(
                           onPressed: () {
                             setState(() {
+                              if (UploadFile.isFetched == true) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  showsnackbar(Colors.black, UploadFile.message,
+                                      context),
+                                );
+                              }
                               if (LocalVideoPlayer
                                   .controller!.value.isPlaying) {
                                 LocalVideoPlayer.controller!.pause();

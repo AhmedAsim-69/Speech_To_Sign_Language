@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'pages/my_homepage.dart';
+import 'package:stsl/pages/dashboard.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
           primary: const Color.fromARGB(255, 79, 168, 197),
         ),
       ),
-      home: const MyHomePage(title: 'Speech to Pose Sign Language'),
+      home: const Dashboard(),
     );
   }
 }
