@@ -45,7 +45,7 @@ class _TextPageState extends State<TextPage> {
   @override
   void dispose() {
     AudioRecorder.recorder.closeRecorder();
-    // LocalVideoPlayer.controller!.dispose();
+    LocalVideoPlayer.controller!.dispose();
     super.dispose();
   }
 

@@ -1,12 +1,18 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:stsl/functions/functions.dart';
 import 'package:stsl/services/audio_player.dart';
 import 'package:stsl/services/audio_recorder.dart';
 import 'package:stsl/services/format_time.dart';
 import 'package:stsl/services/upload_file.dart';
 import 'package:stsl/services/video_player.dart';
+import 'package:stsl/widgets/multi_purpose_button.dart';
 import 'package:stsl/widgets/snackbar.dart';
 import 'package:video_player/video_player.dart';
+
+bool isRec = false;
 
 class SpeechPage extends StatefulWidget {
   const SpeechPage({Key? key, required this.title}) : super(key: key);
@@ -24,6 +30,7 @@ class _SpeechPageState extends State<SpeechPage> {
 
     AudioRecorder.initRecorder();
     AudioPlay.setAudio();
+    AudioPlay.playAudio();
     AudioPlay.audioPlayer.onPlayerStateChanged.listen((state) {
       setState(() {
         AudioPlay.isPlaying = state == PlayerState.isPlaying;
@@ -42,10 +49,24 @@ class _SpeechPageState extends State<SpeechPage> {
     // LocalVideoPlayer.futureController = LocalVideoPlayer.createVideoPlayer();
   }
 
+  // Future<void> startRec() async {
+  //   if (!isRec) {
+  //     isRec = true;
+  //     await AudioRecorder.startRecording();
+  //   }
+  // }
+
+  // Future<void> stopRec() async {
+  //   if (isRec) {
+  //     isRec = false;
+  //     await AudioRecorder.stopRecording();
+  //   }
+  // }
+
   @override
   void dispose() {
     AudioRecorder.recorder.closeRecorder();
-    // LocalVideoPlayer.controller!.dispose();
+    LocalVideoPlayer.controller!.dispose();
     super.dispose();
   }
 
@@ -63,26 +84,28 @@ class _SpeechPageState extends State<SpeechPage> {
             StreamBuilder<RecordingDisposition>(
               stream: AudioRecorder.recorder.onProgress,
               builder: (context, snapshot) {
+                log("12333 $isRec");
                 final duration =
                     snapshot.hasData ? snapshot.data!.duration : Duration.zero;
                 return Text('${duration.inSeconds} s');
               },
             ),
-            ElevatedButton(
-              child: Icon(
-                AudioRecorder.recorder.isRecording
-                    ? Icons.record_voice_over
-                    : Icons.mic,
-                color: Colors.lightBlue,
-              ),
-              onPressed: () async {
-                if (AudioRecorder.recorder.isRecording) {
-                  await AudioRecorder.stopRecording();
-                } else {
-                  await AudioRecorder.startRecording();
-                }
-                setState(() {});
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                MultiPurposeButton(
+                    icon: Icons.abc,
+                    function: MyFunctions.startRec,
+                    bgColor: (!isRec) ? Colors.red : Colors.red[100],
+                    iconColor: Colors.white,
+                    rec: isRec),
+                MultiPurposeButton(
+                    icon: Icons.stop,
+                    function: MyFunctions.stopRec,
+                    bgColor: (isRec) ? Colors.green : Colors.green[100],
+                    iconColor: Colors.white,
+                    rec: isRec),
+              ],
             ),
             Slider(
               min: 0,
