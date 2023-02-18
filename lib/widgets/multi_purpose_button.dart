@@ -10,13 +10,21 @@ class MultiPurposeButton extends StatelessWidget {
     this.bgColor,
     this.iconColor,
     this.rec,
+    this.altIcon,
+    required this.updateFunc,
+    this.altFunc,
+    this.altFunc2,
   }) : super(key: key);
 
   final IconData icon;
   final VoidCallback function;
+  final VoidCallback updateFunc;
   final Color? bgColor;
   final Color? iconColor;
   final bool? rec;
+  final IconData? altIcon;
+  final VoidCallback? altFunc;
+  final VoidCallback? altFunc2;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +39,12 @@ class MultiPurposeButton extends StatelessWidget {
       onPressed: () {
         function();
         log("1213212312312 = $rec");
+        if (altFunc != null && altFunc2 != null) {
+          log("alt called");
+          altFunc!();
+          altFunc2!();
+        }
+        updateFunc();
       },
     );
   }

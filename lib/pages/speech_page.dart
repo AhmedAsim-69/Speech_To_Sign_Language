@@ -13,6 +13,7 @@ import 'package:stsl/widgets/snackbar.dart';
 import 'package:video_player/video_player.dart';
 
 bool isRec = false;
+bool isPlay = false;
 
 class SpeechPage extends StatefulWidget {
   const SpeechPage({Key? key, required this.title}) : super(key: key);
@@ -30,22 +31,23 @@ class _SpeechPageState extends State<SpeechPage> {
 
     AudioRecorder.initRecorder();
     AudioPlay.setAudio();
-    AudioPlay.playAudio();
-    AudioPlay.audioPlayer.onPlayerStateChanged.listen((state) {
-      setState(() {
-        AudioPlay.isPlaying = state == PlayerState.isPlaying;
-      });
-    });
-    AudioPlay.audioPlayer.onDurationChanged.listen((newDuration) {
-      setState(() {
-        AudioPlay.duration = newDuration;
-      });
-    });
-    AudioPlay.audioPlayer.onPositionChanged.listen((newPosition) {
-      setState(() {
-        AudioPlay.position = newPosition;
-      });
-    });
+    _audioFuncs();
+    // AudioPlay.audioPlayer.onPlayerStateChanged.listen((state) {
+    //   setState(() {
+    //     AudioPlay.isPlaying = state == PlayerState.isPlaying;
+    //     log("INIT IS_PLAYING = ${AudioPlay.isPlaying}");
+    //   });
+    // });
+    // AudioPlay.audioPlayer.onDurationChanged.listen((newDuration) {
+    //   setState(() {
+    //     AudioPlay.duration = newDuration;
+    //   });
+    // });
+    // AudioPlay.audioPlayer.onPositionChanged.listen((newPosition) {
+    //   setState(() {
+    //     AudioPlay.position = newPosition;
+    //   });
+    // });
     // LocalVideoPlayer.futureController = LocalVideoPlayer.createVideoPlayer();
   }
 
@@ -68,6 +70,26 @@ class _SpeechPageState extends State<SpeechPage> {
     AudioRecorder.recorder.closeRecorder();
     LocalVideoPlayer.controller!.dispose();
     super.dispose();
+  }
+
+  void _audioFuncs() {
+    // log("IN AUDIO FUNCS\n");
+    AudioPlay.audioPlayer.onDurationChanged.listen((newDuration) {
+      setState(() {
+        AudioPlay.duration = newDuration;
+        // log("IN AUDIO FUNCS 1\n");
+      });
+    });
+    AudioPlay.audioPlayer.onPositionChanged.listen((newPosition) {
+      setState(() {
+        AudioPlay.position = newPosition;
+        // log("IN AUDIO FUNCS 2\n");
+      });
+    });
+  }
+
+  void _updateState() {
+    setState(() {});
   }
 
   @override
@@ -96,26 +118,34 @@ class _SpeechPageState extends State<SpeechPage> {
                 MultiPurposeButton(
                     icon: Icons.abc,
                     function: MyFunctions.startRec,
+                    updateFunc: _updateState,
                     bgColor: (!isRec) ? Colors.red : Colors.red[100],
                     iconColor: Colors.white,
                     rec: isRec),
                 MultiPurposeButton(
                     icon: Icons.stop,
                     function: MyFunctions.stopRec,
+                    updateFunc: _updateState,
+                    altFunc: AudioPlay.setAudio,
+                    altFunc2: _audioFuncs,
                     bgColor: (isRec) ? Colors.green : Colors.green[100],
                     iconColor: Colors.white,
                     rec: isRec),
               ],
             ),
-            Slider(
-              min: 0,
-              max: AudioPlay.duration.inSeconds.toDouble(),
-              value: AudioPlay.position.inDays.toDouble(),
-              onChanged: ((value) async {
-                final position = Duration(seconds: value.toInt());
-                await AudioPlay.audioPlayer.seek(position);
-                await AudioPlay.audioPlayer.resume();
-              }),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(15, 2, 15, 2),
+              child: Slider(
+                min: 0,
+                max: AudioPlay.duration.inSeconds.toDouble(),
+                value: AudioPlay.position.inSeconds.toDouble(),
+                onChanged: ((value) {
+                  final position = Duration(seconds: value.toInt());
+                  AudioPlay.audioPlayer.seek(position);
+                  AudioPlay.audioPlayer.resume();
+                  setState(() {});
+                }),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
@@ -125,20 +155,41 @@ class _SpeechPageState extends State<SpeechPage> {
                   Text(
                     FormatTime.formatTime(AudioPlay.position),
                   ),
-                  ElevatedButton(
-                    child: Icon(
-                      AudioPlay.isPlaying ? Icons.pause : Icons.play_arrow,
-                      color: Colors.lightBlue,
-                    ),
-                    onPressed: () async {
-                      if (AudioPlay.isPlaying) {
-                        await AudioPlay.audioPlayer.pause();
-                      } else {
-                        await AudioPlay.audioPlayer.resume();
-                      }
-                      setState(() {});
-                    },
+                  MultiPurposeButton(
+                    icon: (isPlay) ? Icons.pause : Icons.play_arrow,
+                    altIcon: Icons.pause,
+                    function: MyFunctions.playAudio,
+                    updateFunc: _updateState,
+                    altFunc: _audioFuncs,
+                    iconColor: Colors.white,
                   ),
+                  MultiPurposeButton(
+                      icon: Icons.stop,
+                      function: MyFunctions.stopAudio,
+                      updateFunc: _updateState,
+                      altFunc: _audioFuncs,
+                      bgColor: Colors.red,
+                      iconColor: Colors.white),
+
+                  // ElevatedButton(
+                  //   child: Icon(
+                  //     AudioPlay.isPlaying ? Icons.pause : Icons.play_arrow,
+                  //     color: Colors.lightBlue,
+                  //   ),
+                  //   onPressed: () async {
+                  //     if (AudioPlay.isPlaying) {
+                  //       await AudioPlay.audioPlayer.pause();
+                  //       AudioPlay.isPlaying = false;
+                  //       log("paused");
+                  //     } else {
+                  //       await AudioPlay.audioPlayer.resume();
+                  //       AudioPlay.isPlaying = true;
+                  //       log("audioplayer = ${AudioPlay.isPlaying}");
+                  //       // log("resumed");
+                  //     }
+                  //     setState(() {});
+                  //   },
+                  // ),
                   Text(FormatTime.formatTime(AudioPlay.duration)),
                 ],
               ),
