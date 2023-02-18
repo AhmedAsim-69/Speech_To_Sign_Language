@@ -1,7 +1,10 @@
-import 'dart:developer';
-
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+
+import 'dart:developer';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:video_player/video_player.dart';
+
 import 'package:stsl/functions/functions.dart';
 import 'package:stsl/services/audio_player.dart';
 import 'package:stsl/services/audio_recorder.dart';
@@ -10,7 +13,6 @@ import 'package:stsl/services/upload_file.dart';
 import 'package:stsl/services/video_player.dart';
 import 'package:stsl/widgets/multi_purpose_button.dart';
 import 'package:stsl/widgets/snackbar.dart';
-import 'package:video_player/video_player.dart';
 
 bool isRec = false;
 bool isPlay = false;
@@ -31,59 +33,28 @@ class _SpeechPageState extends State<SpeechPage> {
 
     AudioRecorder.initRecorder();
     AudioPlay.setAudio();
+    LocalVideoPlayer.createVideoPlayer();
+    LocalVideoPlayer.videoController();
     _audioFuncs();
-    // AudioPlay.audioPlayer.onPlayerStateChanged.listen((state) {
-    //   setState(() {
-    //     AudioPlay.isPlaying = state == PlayerState.isPlaying;
-    //     log("INIT IS_PLAYING = ${AudioPlay.isPlaying}");
-    //   });
-    // });
-    // AudioPlay.audioPlayer.onDurationChanged.listen((newDuration) {
-    //   setState(() {
-    //     AudioPlay.duration = newDuration;
-    //   });
-    // });
-    // AudioPlay.audioPlayer.onPositionChanged.listen((newPosition) {
-    //   setState(() {
-    //     AudioPlay.position = newPosition;
-    //   });
-    // });
-    // LocalVideoPlayer.futureController = LocalVideoPlayer.createVideoPlayer();
   }
-
-  // Future<void> startRec() async {
-  //   if (!isRec) {
-  //     isRec = true;
-  //     await AudioRecorder.startRecording();
-  //   }
-  // }
-
-  // Future<void> stopRec() async {
-  //   if (isRec) {
-  //     isRec = false;
-  //     await AudioRecorder.stopRecording();
-  //   }
-  // }
 
   @override
   void dispose() {
     AudioRecorder.recorder.closeRecorder();
     LocalVideoPlayer.controller!.dispose();
+    LocalVideoPlayer.chewieController!.dispose();
     super.dispose();
   }
 
   void _audioFuncs() {
-    // log("IN AUDIO FUNCS\n");
     AudioPlay.audioPlayer.onDurationChanged.listen((newDuration) {
       setState(() {
         AudioPlay.duration = newDuration;
-        // log("IN AUDIO FUNCS 1\n");
       });
     });
     AudioPlay.audioPlayer.onPositionChanged.listen((newPosition) {
       setState(() {
         AudioPlay.position = newPosition;
-        // log("IN AUDIO FUNCS 2\n");
       });
     });
   }
@@ -118,6 +89,7 @@ class _SpeechPageState extends State<SpeechPage> {
                 MultiPurposeButton(
                     icon: Icons.abc,
                     function: MyFunctions.startRec,
+                    altFunc: MyFunctions.stopAudio,
                     updateFunc: _updateState,
                     bgColor: (!isRec) ? Colors.red : Colors.red[100],
                     iconColor: Colors.white,
@@ -137,13 +109,14 @@ class _SpeechPageState extends State<SpeechPage> {
               padding: const EdgeInsets.fromLTRB(15, 2, 15, 2),
               child: Slider(
                 min: 0,
-                max: AudioPlay.duration.inSeconds.toDouble(),
-                value: AudioPlay.position.inSeconds.toDouble(),
+                max: AudioPlay.duration.inMicroseconds.toDouble(),
+                divisions: 200,
+                value: AudioPlay.position.inMicroseconds.toDouble(),
                 onChanged: ((value) {
-                  final position = Duration(seconds: value.toInt());
+                  final position = Duration(microseconds: value.toInt());
                   AudioPlay.audioPlayer.seek(position);
-                  AudioPlay.audioPlayer.resume();
-                  setState(() {});
+                  // AudioPlay.audioPlayer.resume();
+                  // setState(() {});
                 }),
               ),
             ),
@@ -170,26 +143,6 @@ class _SpeechPageState extends State<SpeechPage> {
                       altFunc: _audioFuncs,
                       bgColor: Colors.red,
                       iconColor: Colors.white),
-
-                  // ElevatedButton(
-                  //   child: Icon(
-                  //     AudioPlay.isPlaying ? Icons.pause : Icons.play_arrow,
-                  //     color: Colors.lightBlue,
-                  //   ),
-                  //   onPressed: () async {
-                  //     if (AudioPlay.isPlaying) {
-                  //       await AudioPlay.audioPlayer.pause();
-                  //       AudioPlay.isPlaying = false;
-                  //       log("paused");
-                  //     } else {
-                  //       await AudioPlay.audioPlayer.resume();
-                  //       AudioPlay.isPlaying = true;
-                  //       log("audioplayer = ${AudioPlay.isPlaying}");
-                  //       // log("resumed");
-                  //     }
-                  //     setState(() {});
-                  //   },
-                  // ),
                   Text(FormatTime.formatTime(AudioPlay.duration)),
                 ],
               ),
@@ -242,11 +195,34 @@ class _SpeechPageState extends State<SpeechPage> {
                       ],
                     );
                   } else {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: Column(
+                        children: const [
+                          SizedBox(
+                            height: 100,
+                          ),
+                          CircularProgressIndicator(),
+                          SizedBox(
+                            height: 100,
+                          ),
+                          Text("No Video Found Yet")
+                        ],
+                      ),
+                    );
                   }
                 },
               ),
-            )
+            ),
+            Container(
+              child: (LocalVideoPlayer.chewieController == null)
+                  ? Column(
+                      children: const [
+                        Text("No Video Found Yet"),
+                        CircularProgressIndicator(),
+                      ],
+                    )
+                  : Chewie(controller: LocalVideoPlayer.chewieController!),
+            ),
           ],
         ),
       ),

@@ -50,6 +50,7 @@ dependencies:
   video_player: ^2.5.1
   basic_utils: ^5.4.2
   media_info: ^0.12.0+1
+  chewie: ^1.4.0
 
 dev_dependencies:
   flutter_test:
