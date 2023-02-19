@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'dart:developer';
 import 'package:flutter_sound/flutter_sound.dart';
+import 'package:stsl/pages/display_video.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:stsl/functions/functions.dart';
@@ -33,7 +34,7 @@ class _SpeechPageState extends State<SpeechPage> {
 
     AudioRecorder.initRecorder();
     AudioPlay.setAudio();
-    LocalVideoPlayer.createVideoPlayer();
+    // LocalVideoPlayer.createVideoPlayer();
     LocalVideoPlayer.videoController();
     _audioFuncs();
   }
@@ -41,8 +42,8 @@ class _SpeechPageState extends State<SpeechPage> {
   @override
   void dispose() {
     AudioRecorder.recorder.closeRecorder();
-    LocalVideoPlayer.controller!.dispose();
-    LocalVideoPlayer.chewieController!.dispose();
+    // LocalVideoPlayer.controller!.dispose();
+    // LocalVideoPlayer.chewieController!.dispose();
     super.dispose();
   }
 
@@ -72,7 +73,7 @@ class _SpeechPageState extends State<SpeechPage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             StreamBuilder<RecordingDisposition>(
               stream: AudioRecorder.recorder.onProgress,
@@ -153,76 +154,93 @@ class _SpeechPageState extends State<SpeechPage> {
                 "Upload Speech",
               ),
             ),
-            Expanded(
-              child: FutureBuilder(
-                future: LocalVideoPlayer.futureController,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    LocalVideoPlayer.controller =
-                        snapshot.data as VideoPlayerController;
-                    return Column(
-                      children: [
-                        AspectRatio(
-                          aspectRatio: (16 / 9),
-                          child: VideoPlayer(LocalVideoPlayer.controller!),
-                        ),
-                        FloatingActionButton(
-                          onPressed: () {
-                            setState(() {
-                              if (UploadFile.isFetched == true) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  showsnackbar(Colors.black, UploadFile.message,
-                                      context),
-                                );
-                              }
-                              if (LocalVideoPlayer
-                                  .controller!.value.isPlaying) {
-                                LocalVideoPlayer.controller!.pause();
-                              } else {
-                                LocalVideoPlayer.controller!.play();
-                              }
-                            });
-                          },
-                          backgroundColor:
-                              const Color.fromARGB(255, 79, 168, 197),
-                          foregroundColor: Colors.black,
-                          child: Icon(
-                            LocalVideoPlayer.controller!.value.isPlaying
-                                ? Icons.pause
-                                : Icons.play_arrow,
-                          ),
-                        )
-                      ],
-                    );
-                  } else {
-                    return Center(
-                      child: Column(
-                        children: const [
-                          SizedBox(
-                            height: 100,
-                          ),
-                          CircularProgressIndicator(),
-                          SizedBox(
-                            height: 100,
-                          ),
-                          Text("No Video Found Yet")
-                        ],
-                      ),
-                    );
-                  }
-                },
-              ),
+            Text((UploadFile.sentence == "")
+                ? "No Video Yet"
+                : "The video is formed for: ${UploadFile.sentence}"),
+            Text((UploadFile.sentence == "")
+                ? "No Sentence Yet"
+                : "No Pose found for following words: ${UploadFile.wordsNotFound}"),
+            // Expanded(
+            //   child: FutureBuilder(
+            //     future: LocalVideoPlayer.futureController,
+            //     builder: (context, snapshot) {
+            //       if (snapshot.connectionState == ConnectionState.done) {
+            //         LocalVideoPlayer.controller =
+            //             snapshot.data as VideoPlayerController;
+            //         return Column(
+            //           children: [
+            //             AspectRatio(
+            //               aspectRatio: (16 / 9),
+            //               child: VideoPlayer(LocalVideoPlayer.controller!),
+            //             ),
+            //             FloatingActionButton(
+            //               onPressed: () {
+            //                 setState(() {
+            //                   // if (UploadFile.isFetched == true) {
+            //                   //   ScaffoldMessenger.of(context).showSnackBar(
+            //                   //     showsnackbar(Colors.black, UploadFile.message,
+            //                   //         context),
+            //                   //   );
+            //                   // }
+            //                   if (LocalVideoPlayer
+            //                       .controller!.value.isPlaying) {
+            //                     LocalVideoPlayer.controller!.pause();
+            //                   } else {
+            //                     LocalVideoPlayer.controller!.play();
+            //                   }
+            //                 });
+            //               },
+            //               backgroundColor:
+            //                   const Color.fromARGB(255, 79, 168, 197),
+            //               foregroundColor: Colors.black,
+            //               child: Icon(
+            //                 LocalVideoPlayer.controller!.value.isPlaying
+            //                     ? Icons.pause
+            //                     : Icons.play_arrow,
+            //               ),
+            //             )
+            //           ],
+            //         );
+            //       } else {
+            //         return Center(
+            //           child: Column(
+            //             children: const [
+            //               CircularProgressIndicator(),
+            //               Text("No Video Found Yet")
+            //             ],
+            //           ),
+            //         );
+            //       }
+            //     },
+            //   ),
+            // ),
+
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const DisplayVideo()),
+                  );
+                });
+                // Navigate back to first route when tapped.
+              },
+              child: const Text('Play Video!'),
             ),
-            Container(
-              child: (LocalVideoPlayer.chewieController == null)
-                  ? Column(
-                      children: const [
-                        Text("No Video Found Yet"),
-                        CircularProgressIndicator(),
-                      ],
-                    )
-                  : Chewie(controller: LocalVideoPlayer.chewieController!),
-            ),
+            // Container(
+            //   child: (LocalVideoPlayer.chewieController == null)
+            //       ? Column(
+            //           children: const [
+            //             Text("No Video Found Yet"),
+            //             CircularProgressIndicator(),
+            //           ],
+            //         )
+            //       : Chewie(controller: LocalVideoPlayer.chewieController!),
+            // ),
+            // const SizedBox(
+            //   height: 200,
+            // )
           ],
         ),
       ),

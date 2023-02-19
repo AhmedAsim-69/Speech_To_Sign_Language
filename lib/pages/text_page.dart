@@ -45,7 +45,7 @@ class _TextPageState extends State<TextPage> {
   @override
   void dispose() {
     AudioRecorder.recorder.closeRecorder();
-    LocalVideoPlayer.controller!.dispose();
+    // LocalVideoPlayer.controller!.dispose();
     super.dispose();
   }
 
@@ -121,58 +121,77 @@ class _TextPageState extends State<TextPage> {
               ),
             ),
             TextButton(
-              onPressed: () => UploadFile.uploadFile(),
+              onPressed: () {
+                setState(() {
+                  UploadFile.uploadFile();
+                  if (UploadFile.isFetched == true) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      showsnackbar(
+                          Colors.black,
+                          "Video is Fetched, Click on 'Play Video!' button to play it.",
+                          context),
+                    );
+                  }
+                });
+              },
               child: const Text(
                 "Upload Speech",
               ),
             ),
-            Expanded(
-              child: FutureBuilder(
-                future: LocalVideoPlayer.futureController,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    LocalVideoPlayer.controller =
-                        snapshot.data as VideoPlayerController;
-                    return Column(
-                      children: [
-                        AspectRatio(
-                          aspectRatio: (16 / 9),
-                          child: VideoPlayer(LocalVideoPlayer.controller!),
-                        ),
-                        FloatingActionButton(
-                          onPressed: () {
-                            setState(() {
-                              if (UploadFile.isFetched == true) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  showsnackbar(Colors.black, UploadFile.message,
-                                      context),
-                                );
-                              }
-                              if (LocalVideoPlayer
-                                  .controller!.value.isPlaying) {
-                                LocalVideoPlayer.controller!.pause();
-                              } else {
-                                LocalVideoPlayer.controller!.play();
-                              }
-                            });
-                          },
-                          backgroundColor:
-                              const Color.fromARGB(255, 79, 168, 197),
-                          foregroundColor: Colors.black,
-                          child: Icon(
-                            LocalVideoPlayer.controller!.value.isPlaying
-                                ? Icons.pause
-                                : Icons.play_arrow,
-                          ),
-                        )
-                      ],
-                    );
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                },
-              ),
-            )
+            // if (UploadFile.isFetched == true) {
+            //                     ScaffoldMessenger.of(context).showSnackBar(
+            //                       showsnackbar(Colors.black, "Video is Fetched, Click on 'Play Video!' button to play it.",
+            //                           context),
+            //                     );
+            //                   }
+
+            // Expanded(
+            //   child: FutureBuilder(
+            //     future: LocalVideoPlayer.futureController,
+            //     builder: (context, snapshot) {
+            //       if (snapshot.connectionState == ConnectionState.done) {
+            //         LocalVideoPlayer.controller =
+            //             snapshot.data as VideoPlayerController;
+            //         return Column(
+            //           children: [
+            //             AspectRatio(
+            //               aspectRatio: (16 / 9),
+            //               child: VideoPlayer(LocalVideoPlayer.controller!),
+            //             ),
+            //             FloatingActionButton(
+            //               onPressed: () {
+            //                 setState(() {
+            //                   if (UploadFile.isFetched == true) {
+            //                     ScaffoldMessenger.of(context).showSnackBar(
+            //                       showsnackbar(Colors.black, UploadFile.message,
+            //                           context),
+            //                     );
+            //                   }
+            //                   if (LocalVideoPlayer
+            //                       .controller!.value.isPlaying) {
+            //                     LocalVideoPlayer.controller!.pause();
+            //                   } else {
+            //                     LocalVideoPlayer.controller!.play();
+            //                   }
+            //                 });
+            //               },
+            //               backgroundColor:
+            //                   const Color.fromARGB(255, 79, 168, 197),
+            //               foregroundColor: Colors.black,
+            //               child: Icon(
+            //                 LocalVideoPlayer.controller!.value.isPlaying
+            //                     ? Icons.pause
+            //                     : Icons.play_arrow,
+            //               ),
+            //             )
+            //           ],
+            //         );
+            //       } else {
+            //         return const Center(child: CircularProgressIndicator());
+            //       }
+            //     },
+            //   ),
+            // )
           ],
         ),
       ),

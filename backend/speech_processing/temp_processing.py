@@ -85,13 +85,15 @@ def processing():
     clip0 = VideoFileClip(
         r"D:\UNIVERSITY Stuff\FYP - Work\Dataset\40.mp4")
     final = clip0.subclip(0, 0)
-
+    words_not_found = []
     for x in filtered_sentence:
         try:
             clip = VideoFileClip(
                 fr"D:\UNIVERSITY Stuff\FYP - Work\Dataset\{x}.mp4")
             final = concatenate_videoclips([final, clip])
         except OSError:
+            words_not_found.append(x)
             print("File ", x, ".mp4 not found")
             continue
     final.write_videofile(r"D:\FYP APP\STSL - APP\stsl\backend\API\video\merged.mp4")
+    return[filtered_sentence, words_not_found]
