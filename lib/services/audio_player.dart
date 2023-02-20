@@ -1,3 +1,5 @@
+import 'dart:io' as io;
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -15,8 +17,13 @@ class AudioPlay {
     await audioPlayer.dispose();
     audioPlayer.setReleaseMode(ReleaseMode.loop);
     String dir = (await getExternalStorageDirectory())!.path;
-    await audioPlayer.setSource(DeviceFileSource("$dir/audio.wav"));
+    var syncPath = "$dir/audio.wav";
 
+    await io.File(syncPath).exists();
+    bool isFile = io.File(syncPath).existsSync();
+    if (isFile) {
+      await audioPlayer.setSource(DeviceFileSource("$dir/audio.wav"));
+    }
     audioPlayer.onDurationChanged.listen((newDuration) {
       duration = newDuration;
     });

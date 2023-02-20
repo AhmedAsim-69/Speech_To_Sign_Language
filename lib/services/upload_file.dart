@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
 import 'package:stsl/services/video_player.dart';
-import 'package:stsl/widgets/snackbar.dart';
 
 class UploadFile {
   static String message = "";
@@ -18,8 +15,8 @@ class UploadFile {
     File selectedFile = File(
         '/storage/emulated/0/Android/data/com.example.stsl/files/audio.wav');
 
-    final request = http.MultipartRequest(
-        "POST", Uri.parse("https://5c01-39-46-123-229.in.ngrok.io/upload"));
+    final request =
+        http.MultipartRequest("POST", Uri.parse("http://10.0.2.2/upload"));
 
     final headers = {
       "Content-type": " multipart/form-data",
@@ -32,6 +29,12 @@ class UploadFile {
 
     request.headers.addAll(headers);
     final response = await request.send();
+
+    if (response.statusCode == 200) {
+      log("OK!");
+    } else {
+      log("Not OK! Status Code = ${response.statusCode} ");
+    }
 
     http.Response res = await http.Response.fromStream(response);
     final resJson = jsonDecode(res.body);

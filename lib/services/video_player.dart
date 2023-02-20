@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:io' as io;
 import 'dart:typed_data';
 
 import 'package:chewie/chewie.dart';
@@ -43,23 +44,52 @@ class LocalVideoPlayer {
       await file.writeAsBytes(bytes);
     }
     final VideoPlayerController ccontroller = VideoPlayerController.file(file);
-    if (ccontroller.value.position !=
-        const Duration(seconds: 0, minutes: 0, hours: 0)) {
+    var syncPath = "$dir/STSL.mp4";
+
+    await io.File(syncPath).exists();
+    bool isFile = io.File(syncPath).existsSync();
+
+    if (isFile) {
       await ccontroller.initialize();
       await ccontroller.setLooping(true);
-      chewieController = ChewieController(videoPlayerController: ccontroller);
+
+      chewieController = ChewieController(
+        videoPlayerController: ccontroller,
+        aspectRatio: ccontroller.value.aspectRatio,
+        allowFullScreen: true,
+        allowPlaybackSpeedChanging: true,
+        fullScreenByDefault: false,
+        showControls: true,
+        playbackSpeeds: [0.25, 0.5, 0.75, 1, 1.25, 1.50, 1.75, 2],
+      );
     }
-    await ccontroller.initialize();
-    await ccontroller.setLooping(true);
-    chewieController = ChewieController(
-      videoPlayerController: ccontroller,
-      aspectRatio: ccontroller.value.aspectRatio,
-      allowFullScreen: true,
-      allowPlaybackSpeedChanging: true,
-      fullScreenByDefault: false,
-      showControls: true,
-      playbackSpeeds: [0.25, 0.5, 0.75, 1, 1.25, 1.50, 1.75, 2],
-    );
+
+    // if (ccontroller.value.position !=
+    //     const Duration(seconds: 0, minutes: 0, hours: 0)) {
+    //   await ccontroller.initialize();
+    //   await ccontroller.setLooping(true);
+
+    //   chewieController = ChewieController(
+    //     videoPlayerController: ccontroller,
+    //     aspectRatio: ccontroller.value.aspectRatio,
+    //     allowFullScreen: true,
+    //     allowPlaybackSpeedChanging: true,
+    //     fullScreenByDefault: false,
+    //     showControls: true,
+    //     playbackSpeeds: [0.25, 0.5, 0.75, 1, 1.25, 1.50, 1.75, 2],
+    //   );
+    // }
+    // await ccontroller.initialize();
+    // await ccontroller.setLooping(true);
+    // chewieController = ChewieController(
+    //   videoPlayerController: ccontroller,
+    //   aspectRatio: ccontroller.value.aspectRatio,
+    //   allowFullScreen: true,
+    //   allowPlaybackSpeedChanging: true,
+    //   fullScreenByDefault: false,
+    //   showControls: true,
+    //   playbackSpeeds: [0.25, 0.5, 0.75, 1, 1.25, 1.50, 1.75, 2],
+    // );
     log("ch = ${ccontroller.value.duration}");
     log("aspect ratio = ${ccontroller.value.aspectRatio}");
     return ccontroller;

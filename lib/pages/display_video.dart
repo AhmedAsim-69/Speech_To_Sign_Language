@@ -27,11 +27,25 @@ class _DisplayVideoState extends State<DisplayVideo> {
         centerTitle: true,
       ),
       body: (LocalVideoPlayer.chewieController == null)
-          ? Column(
-              children: const [
-                Text("No Video Found Yet"),
-                CircularProgressIndicator(),
-              ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  CircularProgressIndicator(
+                    backgroundColor: Colors.yellow,
+                    color: Colors.red,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "No Video Found Yet",
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             )
           : Chewie(controller: LocalVideoPlayer.chewieController!),
     );

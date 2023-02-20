@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/flutter_sound.dart';
-import 'package:stsl/services/audio_player.dart';
-import 'package:stsl/services/audio_recorder.dart';
-import 'package:stsl/services/format_time.dart';
+
+import 'package:stsl/pages/display_video.dart';
+
 import 'package:stsl/services/upload_file.dart';
-import 'package:stsl/services/video_player.dart';
-import 'package:stsl/widgets/snackbar.dart';
-import 'package:video_player/video_player.dart';
+
+bool isRec = false;
+bool isPlay = false;
 
 class TextPage extends StatefulWidget {
   const TextPage({Key? key, required this.title}) : super(key: key);
@@ -19,37 +18,6 @@ class TextPage extends StatefulWidget {
 
 class _TextPageState extends State<TextPage> {
   @override
-  void initState() {
-    super.initState();
-
-    AudioRecorder.initRecorder();
-    AudioPlay.setAudio();
-    AudioPlay.audioPlayer.onPlayerStateChanged.listen((state) {
-      setState(() {
-        AudioPlay.isPlaying = state == PlayerState.isPlaying;
-      });
-    });
-    AudioPlay.audioPlayer.onDurationChanged.listen((newDuration) {
-      setState(() {
-        AudioPlay.duration = newDuration;
-      });
-    });
-    AudioPlay.audioPlayer.onPositionChanged.listen((newPosition) {
-      setState(() {
-        AudioPlay.position = newPosition;
-      });
-    });
-    // LocalVideoPlayer.futureController = LocalVideoPlayer.createVideoPlayer();
-  }
-
-  @override
-  void dispose() {
-    AudioRecorder.recorder.closeRecorder();
-    // LocalVideoPlayer.controller!.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -58,140 +26,84 @@ class _TextPageState extends State<TextPage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            StreamBuilder<RecordingDisposition>(
-              stream: AudioRecorder.recorder.onProgress,
-              builder: (context, snapshot) {
-                final duration =
-                    snapshot.hasData ? snapshot.data!.duration : Duration.zero;
-                return Text('${duration.inSeconds} s');
-              },
-            ),
-            ElevatedButton(
-              child: Icon(
-                AudioRecorder.recorder.isRecording
-                    ? Icons.record_voice_over
-                    : Icons.mic,
-                color: Colors.lightBlue,
-              ),
-              onPressed: () async {
-                if (AudioRecorder.recorder.isRecording) {
-                  await AudioRecorder.stopRecording();
-                } else {
-                  await AudioRecorder.startRecording();
-                }
-                setState(() {});
-              },
-            ),
-            Slider(
-              min: 0,
-              max: AudioPlay.duration.inSeconds.toDouble(),
-              value: AudioPlay.position.inDays.toDouble(),
-              onChanged: ((value) async {
-                final position = Duration(seconds: value.toInt());
-                await AudioPlay.audioPlayer.seek(position);
-                await AudioPlay.audioPlayer.resume();
-              }),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Text(
-                    FormatTime.formatTime(AudioPlay.position),
-                  ),
-                  ElevatedButton(
-                    child: Icon(
-                      AudioPlay.isPlaying ? Icons.pause : Icons.play_arrow,
-                      color: Colors.lightBlue,
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextFormField(
+                // keyboardType: TextInputType.none,
+                // textAlign: TextAlign.center,
+                // controller: weightctrl,
+                decoration: InputDecoration(
+                  labelText: 'Enter Text Input: ',
+                  // floatingLabelAlignment: FloatingLabelAlignment.center,
+                  alignLabelWithHint: true,
+                  labelStyle: const TextStyle(color: Colors.black),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      width: 2,
+                      color: Color.fromARGB(255, 79, 168, 197),
                     ),
-                    onPressed: () async {
-                      if (AudioPlay.isPlaying) {
-                        await AudioPlay.audioPlayer.pause();
-                      } else {
-                        await AudioPlay.audioPlayer.resume();
-                      }
-                      setState(() {});
-                    },
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  Text(FormatTime.formatTime(AudioPlay.duration)),
-                ],
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                      width: 2,
+                      color: Color.fromARGB(255, 79, 168, 197),
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: const BorderSide(width: 2, color: Colors.green),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  errorStyle:
+                      const TextStyle(color: Colors.redAccent, fontSize: 14),
+                  suffixIcon: const Padding(
+                    padding: EdgeInsets.only(left: 10, top: 13),
+                    child: Text(
+                      'Kg',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your weight';
+                  } else if (int.parse(value) < 20 || int.parse(value) > 350) {
+                    return 'Please enter weight between 20-350 Kgs';
+                  }
+                  return null;
+                },
               ),
             ),
             TextButton(
-              onPressed: () {
-                setState(() {
-                  UploadFile.uploadFile();
-                  if (UploadFile.isFetched == true) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      showsnackbar(
-                          Colors.black,
-                          "Video is Fetched, Click on 'Play Video!' button to play it.",
-                          context),
-                    );
-                  }
-                });
-              },
+              onPressed: () => UploadFile.uploadFile(),
               child: const Text(
                 "Upload Speech",
               ),
             ),
-            // if (UploadFile.isFetched == true) {
-            //                     ScaffoldMessenger.of(context).showSnackBar(
-            //                       showsnackbar(Colors.black, "Video is Fetched, Click on 'Play Video!' button to play it.",
-            //                           context),
-            //                     );
-            //                   }
-
-            // Expanded(
-            //   child: FutureBuilder(
-            //     future: LocalVideoPlayer.futureController,
-            //     builder: (context, snapshot) {
-            //       if (snapshot.connectionState == ConnectionState.done) {
-            //         LocalVideoPlayer.controller =
-            //             snapshot.data as VideoPlayerController;
-            //         return Column(
-            //           children: [
-            //             AspectRatio(
-            //               aspectRatio: (16 / 9),
-            //               child: VideoPlayer(LocalVideoPlayer.controller!),
-            //             ),
-            //             FloatingActionButton(
-            //               onPressed: () {
-            //                 setState(() {
-            //                   if (UploadFile.isFetched == true) {
-            //                     ScaffoldMessenger.of(context).showSnackBar(
-            //                       showsnackbar(Colors.black, UploadFile.message,
-            //                           context),
-            //                     );
-            //                   }
-            //                   if (LocalVideoPlayer
-            //                       .controller!.value.isPlaying) {
-            //                     LocalVideoPlayer.controller!.pause();
-            //                   } else {
-            //                     LocalVideoPlayer.controller!.play();
-            //                   }
-            //                 });
-            //               },
-            //               backgroundColor:
-            //                   const Color.fromARGB(255, 79, 168, 197),
-            //               foregroundColor: Colors.black,
-            //               child: Icon(
-            //                 LocalVideoPlayer.controller!.value.isPlaying
-            //                     ? Icons.pause
-            //                     : Icons.play_arrow,
-            //               ),
-            //             )
-            //           ],
-            //         );
-            //       } else {
-            //         return const Center(child: CircularProgressIndicator());
-            //       }
-            //     },
-            //   ),
-            // )
+            Text((UploadFile.sentence == "")
+                ? "No Video Yet"
+                : "The video is formed for: ${UploadFile.sentence}"),
+            Text((UploadFile.sentence == "")
+                ? "No Sentence Yet"
+                : "No Pose found for following words: ${UploadFile.wordsNotFound}"),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const DisplayVideo()),
+                  );
+                });
+              },
+              child: const Text('Play Video!'),
+            ),
           ],
         ),
       ),
