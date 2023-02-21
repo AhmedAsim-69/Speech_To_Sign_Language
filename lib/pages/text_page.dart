@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+
+import 'package:stsl/functions/functions.dart';
 
 import 'package:stsl/pages/display_video.dart';
 
-import 'package:stsl/services/upload_file.dart';
-
-bool isRec = false;
-bool isPlay = false;
+import 'package:stsl/services/api_call.dart';
+import 'package:stsl/services/user_simple_preferences.dart';
+import 'package:stsl/services/video_player.dart';
 
 class TextPage extends StatefulWidget {
   const TextPage({Key? key, required this.title}) : super(key: key);
@@ -18,93 +20,120 @@ class TextPage extends StatefulWidget {
 
 class _TextPageState extends State<TextPage> {
   @override
+  void initState() {
+    super.initState();
+
+    MyFunctions.initStorage();
+    LocalVideoPlayer.videoController();
+    ApiCall.wordsFound = UserSimplePreferences.getWords() ?? "";
+    ApiCall.wordsNotFound = UserSimplePreferences.getNotWords() ?? "";
+  }
+
+  @override
+  void dispose() {
+    LocalVideoPlayer.chewieController!.dispose();
+    super.dispose();
+  }
+
+  void _updateState() {
+    setState(() {});
+  }
+
+  final _textEditingController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
         centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              child: TextFormField(
-                // keyboardType: TextInputType.none,
-                // textAlign: TextAlign.center,
-                // controller: weightctrl,
-                decoration: InputDecoration(
-                  labelText: 'Enter Text Input: ',
-                  // floatingLabelAlignment: FloatingLabelAlignment.center,
-                  alignLabelWithHint: true,
-                  labelStyle: const TextStyle(color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      width: 2,
-                      color: Color.fromARGB(255, 79, 168, 197),
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      width: 2,
-                      color: Color.fromARGB(255, 79, 168, 197),
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 2, color: Colors.green),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  errorStyle:
-                      const TextStyle(color: Colors.redAccent, fontSize: 14),
-                  suffixIcon: const Padding(
-                    padding: EdgeInsets.only(left: 10, top: 13),
-                    child: Text(
-                      'Kg',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
+      body: ModalProgressHUD(
+        color: Colors.black,
+        opacity: 0.4,
+        blur: 1.0,
+        progressIndicator: const CircularProgressIndicator(
+          color: Colors.red,
+          backgroundColor: Colors.yellow,
+        ),
+        inAsyncCall: ApiCall.isLoading,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextFormField(
+                  controller: _textEditingController,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Text Input: ',
+                    alignLabelWithHint: true,
+                    labelStyle: const TextStyle(color: Colors.black),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        width: 2,
+                        color: Color.fromARGB(255, 79, 168, 197),
                       ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(
+                        width: 2,
+                        color: Color.fromARGB(255, 79, 168, 197),
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(width: 2, color: Colors.green),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    errorStyle:
+                        const TextStyle(color: Colors.redAccent, fontSize: 14),
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter Text';
+                    }
+                    return null;
+                  },
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your weight';
-                  } else if (int.parse(value) < 20 || int.parse(value) > 350) {
-                    return 'Please enter weight between 20-350 Kgs';
-                  }
-                  return null;
+              ),
+              TextButton(
+                onPressed: () async {
+                  await ApiCall.uploadText(
+                      _textEditingController.text, _updateState, context);
                 },
+                child: const Text(
+                  "Upload Text",
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () => UploadFile.uploadFile(),
-              child: const Text(
-                "Upload Speech",
+              Center(
+                child: Text((ApiCall.wordsFound == "")
+                    ? "No Video Yet"
+                    : '''The video is formed for: 
+                    ${ApiCall.wordsFound}'''),
               ),
-            ),
-            Text((UploadFile.wordsFound == "")
-                ? "No Video Yet"
-                : "The video is formed for: ${UploadFile.wordsFound}"),
-            Text((UploadFile.wordsFound == "")
-                ? "No Sentence Yet"
-                : "No Pose found for following words: ${UploadFile.wordsNotFound}"),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const DisplayVideo()),
-                  );
-                });
-              },
-              child: const Text('Play Video!'),
-            ),
-          ],
+              Center(
+                child: Text((ApiCall.wordsFound == "")
+                    ? "No Sentence Yet"
+                    : '''No Pose found for following words: 
+                    ${ApiCall.wordsNotFound}'''),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const DisplayVideo()),
+                    );
+                  });
+                },
+                child: const Text('Play Video!'),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -41,10 +41,8 @@ def uplaodSpeech():
 @app.route('/uploadText', methods = ['POST'])
 def uplaodText():
     if(request.method == 'POST'):
-        speech = request.files['speech']
-        filename = werkzeug.utils.secure_filename(speech.filename)
-        speech.save('D:/FYP APP/STSL - APP/stsl/backend/API/audio/'+filename)
-        sentence, words_not_found =  temp_processing.processing() 
+        text = request.args['text']
+        sentence, words_not_found =  temp_processing.processing(text) 
         try:
             with open( r"D:\FYP APP\STSL - APP\stsl\backend\API\video\merged.mp4", "rb") as videoFile:
                 text_base64 = base64.b64encode(videoFile.read())

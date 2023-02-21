@@ -1,7 +1,9 @@
 import 'dart:io' as io;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:stsl/pages/speech_page.dart';
+
+import 'package:stsl/pages/dashboard.dart';
+
 import 'package:stsl/services/audio_player.dart';
 import 'package:stsl/services/audio_recorder.dart';
 
@@ -54,21 +56,4 @@ class MyFunctions {
       initStorage();
     }
   }
-
-  // Future<bool> _requestPermission() async {
-  //   var result = await permissionHandler.requestStoragePermission(
-  //       [PermissionGroup.phone, PermissionGroup.contacts, PermissionGroup.sms]);
-  //   if (result == PermissionStatus.granted) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
-
-  // Future<bool> requestStoragePermission({Function onPermissionDenied}) async {
-  //   var granted = await _requestPermission();
-  //   if (!granted) {
-  //     onPermissionDenied();
-  //   }
-  //   return granted;
-  // }
 }

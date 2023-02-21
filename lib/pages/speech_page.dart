@@ -1,24 +1,21 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
+import 'package:stsl/functions/functions.dart';
+
+import 'package:stsl/pages/dashboard.dart';
 import 'package:stsl/pages/display_video.dart';
 
-import 'package:stsl/functions/functions.dart';
+import 'package:stsl/services/api_call.dart';
 import 'package:stsl/services/audio_player.dart';
 import 'package:stsl/services/audio_recorder.dart';
 import 'package:stsl/services/format_time.dart';
-import 'package:stsl/services/upload_file.dart';
 import 'package:stsl/services/user_simple_preferences.dart';
 import 'package:stsl/services/video_player.dart';
-import 'package:stsl/widgets/audio_slider.dart';
-import 'package:stsl/widgets/multi_purpose_button.dart';
 
-bool isRec = false;
-bool isPlay = false;
+import 'package:stsl/widgets/multi_purpose_button.dart';
 
 class SpeechPage extends StatefulWidget {
   const SpeechPage({Key? key, required this.title}) : super(key: key);
@@ -38,8 +35,8 @@ class _SpeechPageState extends State<SpeechPage> {
     AudioPlay.setAudio();
     MyFunctions.initStorage();
     LocalVideoPlayer.videoController();
-    UploadFile.wordsFound = UserSimplePreferences.getWords() ?? "";
-    UploadFile.wordsNotFound = UserSimplePreferences.getNotWords() ?? "";
+    ApiCall.wordsFound = UserSimplePreferences.getWords() ?? "";
+    ApiCall.wordsNotFound = UserSimplePreferences.getNotWords() ?? "";
     _audioFuncs();
   }
 
@@ -59,18 +56,7 @@ class _SpeechPageState extends State<SpeechPage> {
     });
     AudioPlay.audioPlayer.onPositionChanged.listen((newPosition) {
       setState(() {
-        // log("count = $count");
         AudioPlay.position = newPosition;
-        // if (AudioPlay.position ==
-        //     const Duration(
-        //         hours: 0, minutes: 00, seconds: 00, microseconds: 00)) {
-        //   count = count + 1;
-        //   if (count == 3) {
-        //     log("count ==== $count");
-        //     count = 0;
-        //     // MyFunctions.stopAudio();
-        //   }
-        // }
       });
     });
   }
@@ -93,9 +79,8 @@ class _SpeechPageState extends State<SpeechPage> {
         progressIndicator: const CircularProgressIndicator(
           color: Colors.red,
           backgroundColor: Colors.yellow,
-          // valueColor: Colors.green,
         ),
-        inAsyncCall: UploadFile.isLoading,
+        inAsyncCall: ApiCall.isLoading,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -131,7 +116,19 @@ class _SpeechPageState extends State<SpeechPage> {
                       rec: isRec),
                 ],
               ),
-              const AudioSlider(),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15, 2, 15, 2),
+                child: Slider(
+                  min: 0,
+                  max: AudioPlay.duration.inMicroseconds.ceilToDouble(),
+                  divisions: 200,
+                  value: AudioPlay.position.inMicroseconds.ceilToDouble(),
+                  onChanged: ((value) {
+                    AudioPlay.audioPlayer
+                        .seek(Duration(microseconds: value.toInt()));
+                  }),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
                 child: Row(
@@ -161,23 +158,23 @@ class _SpeechPageState extends State<SpeechPage> {
               ),
               TextButton(
                 onPressed: () async {
-                  await UploadFile.uploadFile(_updateState, context);
+                  await ApiCall.uploadSpeech(_updateState, context);
                 },
                 child: const Text(
                   "Upload Speech",
                 ),
               ),
               Center(
-                child: Text((UploadFile.wordsFound == "")
+                child: Text((ApiCall.wordsFound == "")
                     ? "No Video Yet"
                     : '''The video is formed for: 
-                    ${UploadFile.wordsFound}'''),
+                    ${ApiCall.wordsFound}'''),
               ),
               Center(
-                child: Text((UploadFile.wordsFound == "")
+                child: Text((ApiCall.wordsFound == "")
                     ? "No Sentence Yet"
                     : '''No Pose found for following words: 
-                    ${UploadFile.wordsNotFound}'''),
+                    ${ApiCall.wordsNotFound}'''),
               ),
               ElevatedButton(
                 onPressed: () {

@@ -1,46 +1,22 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'dart:io' as io;
 import 'dart:typed_data';
 
 import 'package:chewie/chewie.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:stsl/services/upload_file.dart';
+
+import 'package:stsl/services/api_call.dart';
+
 import 'package:video_player/video_player.dart';
 
 class LocalVideoPlayer {
-  // static Future<VideoPlayerController>? futureController;
-  // static VideoPlayerController? controller;
-  // static Future<VideoPlayerController> createVideoPlayer() async {
-  //   Uint8List bytes = base64.decode(UploadFile.message);
-  //   String dir = (await getExternalStorageDirectory())!.path;
-  //   File file = File("$dir/STSL.mp4");
-  //   if (bytes.isNotEmpty) {
-  //     await file.writeAsBytes(bytes);
-  //   }
-  //   final VideoPlayerController cntrlr = VideoPlayerController.file(file);
-  //   if (cntrlr.value.duration >
-  //       const Duration(seconds: 0, minutes: 0, hours: 0)) {
-  //     await cntrlr.initialize();
-  //     await cntrlr.setLooping(true);
-  //     log("in ctrlr");
-  //   }
-  //   await cntrlr.initialize();
-  //   await cntrlr.setLooping(true);
-  //   log("ctrlr = ${cntrlr.value.duration}");
-  //   log("all done");
-
-  //   return cntrlr;
-  // }
-
   static Future<VideoPlayerController>? videoPlayerController;
   static ChewieController? chewieController;
   static videoController() async {
-    Uint8List bytes = (UploadFile.message == "No Pose Could be made")
+    Uint8List bytes = (ApiCall.message == "No Pose Could be made")
         ? Uint8List(0)
-        : base64.decode(UploadFile.message);
-    log("bytes ==== $bytes");
+        : base64.decode(ApiCall.message);
     var dir = (await getExternalStorageDirectory())!.path;
 
     File file = File("$dir/STSL.mp4");
@@ -48,7 +24,7 @@ class LocalVideoPlayer {
       await file.writeAsBytes(bytes);
     }
     final VideoPlayerController ccontroller = VideoPlayerController.file(file);
-    if (UploadFile.message == "No Pose could be made") {
+    if (ApiCall.message == "No Pose could be made") {
       chewieController!.dispose();
       return ccontroller;
     }

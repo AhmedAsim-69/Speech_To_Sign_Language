@@ -9,7 +9,6 @@ class UserSimplePreferences {
 
   static const _wordsFound = 'wordsFound';
   static const _wordsNotFound = 'wordsNotFound';
-  static const _keyCity = 'keyCity';
 
   static Future storeWords(String words) async {
     await _preferences.setString(_wordsFound, words);

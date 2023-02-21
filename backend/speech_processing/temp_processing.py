@@ -14,19 +14,15 @@ from gtts import gTTS
 
 def takecommand(*args):
     r = sr.Recognizer()
-    hello = sr.AudioFile(r'D:\FYP APP\STSL - APP\stsl\backend\API\audio\audio.wav')
-    with hello as source:
-        audio1 = r.record(source)
-    # with sr.Microphone() as source:
-    #     print("Listening to user speech.....")
-    #     r.pause_threshold = 1
-    #     audio1 = r.listen(source, 0, 4)
     try:
         print("Recognizing the speech input.....")
         if args:
             translator = tTranslator(to_lang = 'en-US')
             temp = translator.translate(args[0])
         else:
+            hello = sr.AudioFile(r'D:\FYP APP\STSL - APP\stsl\backend\API\audio\audio.wav')
+            with hello as source:
+                audio1 = r.record(source)
             temp = r.recognize_google(audio1, language='en-US')
         print("\n-----------------------------------------")
         print(f"The User said: {temp}.")
@@ -73,7 +69,6 @@ def videoFormation(sentence):
                 words_not_found += " , " + x 
             continue
     if(words_found == "" and words_not_found == ""):
-        print("dbjhdbsdshdkhskdu")
         words_found = " No Words Found "
         words_not_found = "No Words Found  "
 

@@ -1,5 +1,7 @@
-import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+
+import 'package:chewie/chewie.dart';
+
 import 'package:stsl/services/video_player.dart';
 
 class DisplayVideo extends StatefulWidget {
@@ -23,6 +25,14 @@ class _DisplayVideoState extends State<DisplayVideo> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              setState(() {
+                Navigator.of(context).pop();
+                LocalVideoPlayer.chewieController?.pause();
+              });
+            }),
         title: const Text("Video Player!!"),
         centerTitle: true,
       ),
