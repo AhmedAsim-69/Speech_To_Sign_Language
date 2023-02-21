@@ -7,31 +7,23 @@ class UserSimplePreferences {
     _preferences = await SharedPreferences.getInstance();
   }
 
-  static const _keyLatitude = 'keyLat';
-  static const _keyLongitude = 'keyLon';
+  static const _wordsFound = 'wordsFound';
+  static const _wordsNotFound = 'wordsNotFound';
   static const _keyCity = 'keyCity';
 
-  static Future storeLatitude(String lat) async {
-    await _preferences.setString(_keyLatitude, lat);
+  static Future storeWords(String words) async {
+    await _preferences.setString(_wordsFound, words);
   }
 
-  static Future storeLongitude(String lon) async {
-    await _preferences.setString(_keyLongitude, lon);
+  static Future storeNotWords(String notWords) async {
+    await _preferences.setString(_wordsNotFound, notWords);
   }
 
-  static Future storeCity(String city) async {
-    await _preferences.setString(_keyCity, city);
+  static String? getWords() {
+    return _preferences.getString(_wordsFound);
   }
 
-  static String? getLatitude() {
-    return _preferences.getString(_keyLatitude);
-  }
-
-  static String? getLongitude() {
-    return _preferences.getString(_keyLongitude);
-  }
-
-  static String? getCity() {
-    return _preferences.getString(_keyCity);
+  static String? getNotWords() {
+    return _preferences.getString(_wordsNotFound);
   }
 }

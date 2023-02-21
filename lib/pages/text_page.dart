@@ -86,10 +86,10 @@ class _TextPageState extends State<TextPage> {
                 "Upload Speech",
               ),
             ),
-            Text((UploadFile.sentence == "")
+            Text((UploadFile.wordsFound == "")
                 ? "No Video Yet"
-                : "The video is formed for: ${UploadFile.sentence}"),
-            Text((UploadFile.sentence == "")
+                : "The video is formed for: ${UploadFile.wordsFound}"),
+            Text((UploadFile.wordsFound == "")
                 ? "No Sentence Yet"
                 : "No Pose found for following words: ${UploadFile.wordsNotFound}"),
             ElevatedButton(

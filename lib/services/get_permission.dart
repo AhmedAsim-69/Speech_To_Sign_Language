@@ -27,7 +27,7 @@ class GetPermission {
       // });
       SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.setInt('isBoarding', 0);
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Dashboard()),
       );
@@ -40,6 +40,13 @@ class GetPermission {
       //   ShowSnackbar.showsnackbar(Colors.yellow, Colors.red, Icons.warning,
       //       "All Permissions denied", context);
       // }
+    } else {
+      ShowSnackbar.showsnackbar(
+          Colors.black,
+          Colors.white,
+          Icons.warning,
+          "Please re-open app and/or Enable Permissions from Settings",
+          context);
     }
     if (status.toString().contains('PermissionStatus.permanentlyDenied') ||
         status.toString().contains('PermissionStatus.restricted')) {

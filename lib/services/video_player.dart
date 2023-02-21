@@ -37,7 +37,9 @@ class LocalVideoPlayer {
   static Future<VideoPlayerController>? videoPlayerController;
   static ChewieController? chewieController;
   static videoController() async {
-    Uint8List bytes = base64.decode(UploadFile.message);
+    Uint8List bytes = (UploadFile.message == "No Pose Could be made")
+        ? Uint8List(0)
+        : base64.decode(UploadFile.message);
     log("bytes ==== $bytes");
     var dir = (await getExternalStorageDirectory())!.path;
 
@@ -46,6 +48,10 @@ class LocalVideoPlayer {
       await file.writeAsBytes(bytes);
     }
     final VideoPlayerController ccontroller = VideoPlayerController.file(file);
+    if (UploadFile.message == "No Pose could be made") {
+      chewieController!.dispose();
+      return ccontroller;
+    }
     var syncPath = "$dir/STSL.mp4";
 
     await io.File(syncPath).exists();
@@ -65,35 +71,6 @@ class LocalVideoPlayer {
         playbackSpeeds: [0.25, 0.5, 0.75, 1, 1.25, 1.50, 1.75, 2],
       );
     }
-
-    // if (ccontroller.value.position !=
-    //     const Duration(seconds: 0, minutes: 0, hours: 0)) {
-    //   await ccontroller.initialize();
-    //   await ccontroller.setLooping(true);
-
-    //   chewieController = ChewieController(
-    //     videoPlayerController: ccontroller,
-    //     aspectRatio: ccontroller.value.aspectRatio,
-    //     allowFullScreen: true,
-    //     allowPlaybackSpeedChanging: true,
-    //     fullScreenByDefault: false,
-    //     showControls: true,
-    //     playbackSpeeds: [0.25, 0.5, 0.75, 1, 1.25, 1.50, 1.75, 2],
-    //   );
-    // }
-    // await ccontroller.initialize();
-    // await ccontroller.setLooping(true);
-    // chewieController = ChewieController(
-    //   videoPlayerController: ccontroller,
-    //   aspectRatio: ccontroller.value.aspectRatio,
-    //   allowFullScreen: true,
-    //   allowPlaybackSpeedChanging: true,
-    //   fullScreenByDefault: false,
-    //   showControls: true,
-    //   playbackSpeeds: [0.25, 0.5, 0.75, 1, 1.25, 1.50, 1.75, 2],
-    // );
-    log("ch = ${ccontroller.value.duration}");
-    log("aspect ratio = ${ccontroller.value.aspectRatio}");
     return ccontroller;
   }
 }

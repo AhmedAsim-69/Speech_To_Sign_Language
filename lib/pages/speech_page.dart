@@ -12,7 +12,9 @@ import 'package:stsl/services/audio_player.dart';
 import 'package:stsl/services/audio_recorder.dart';
 import 'package:stsl/services/format_time.dart';
 import 'package:stsl/services/upload_file.dart';
+import 'package:stsl/services/user_simple_preferences.dart';
 import 'package:stsl/services/video_player.dart';
+import 'package:stsl/widgets/audio_slider.dart';
 import 'package:stsl/widgets/multi_purpose_button.dart';
 
 bool isRec = false;
@@ -36,14 +38,15 @@ class _SpeechPageState extends State<SpeechPage> {
     AudioPlay.setAudio();
     MyFunctions.initStorage();
     LocalVideoPlayer.videoController();
+    UploadFile.wordsFound = UserSimplePreferences.getWords() ?? "";
+    UploadFile.wordsNotFound = UserSimplePreferences.getNotWords() ?? "";
     _audioFuncs();
   }
 
   @override
   void dispose() {
     AudioRecorder.recorder.closeRecorder();
-    // LocalVideoPlayer.controller!.dispose();
-    // LocalVideoPlayer.chewieController!.dispose();
+    LocalVideoPlayer.chewieController!.dispose();
     super.dispose();
   }
 
@@ -128,21 +131,7 @@ class _SpeechPageState extends State<SpeechPage> {
                       rec: isRec),
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 2, 15, 2),
-                child: Slider(
-                  min: 0,
-                  max: AudioPlay.duration.inMicroseconds.ceilToDouble(),
-                  divisions: 200,
-                  value: AudioPlay.position.inMicroseconds.ceilToDouble(),
-                  onChanged: ((value) {
-                    AudioPlay.audioPlayer
-                        .seek(Duration(microseconds: value.toInt()));
-                    // AudioPlay.audioPlayer.resume();
-                    // setState(() {});
-                  }),
-                ),
-              ),
+              const AudioSlider(),
               Padding(
                 padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
                 child: Row(
@@ -179,13 +168,13 @@ class _SpeechPageState extends State<SpeechPage> {
                 ),
               ),
               Center(
-                child: Text((UploadFile.sentence == "")
+                child: Text((UploadFile.wordsFound == "")
                     ? "No Video Yet"
                     : '''The video is formed for: 
-                    ${UploadFile.sentence}'''),
+                    ${UploadFile.wordsFound}'''),
               ),
               Center(
-                child: Text((UploadFile.sentence == "")
+                child: Text((UploadFile.wordsFound == "")
                     ? "No Sentence Yet"
                     : '''No Pose found for following words: 
                     ${UploadFile.wordsNotFound}'''),
