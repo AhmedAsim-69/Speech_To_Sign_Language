@@ -1,48 +1,54 @@
 import 'package:flutter/material.dart';
 
-showsnackbar(Color color, String text, BuildContext context) {
-  return ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      duration: const Duration(seconds: 2),
-      content: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(10),
+class ShowSnackbar {
+  static showsnackbar(Color bgColor, Color textColor, IconData prefixIcon,
+      String text, BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.transparent,
+        behavior: SnackBarBehavior.floating,
+        elevation: 0,
+        duration: const Duration(seconds: 3),
+        content: Container(
+          padding: const EdgeInsets.fromLTRB(20, 3, 5, 3),
+          height: height * 0.05,
+          width: width * 0.7,
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(30),
+            ),
           ),
-        ),
-        height: 56,
-        child: Row(
-          children: [
-            const Icon(
-              Icons.warning_rounded,
-              color: Color(0xffffffff),
-            ),
-            const SizedBox(
-              width: 16,
-            ),
-            Expanded(
-              child: Text(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                prefixIcon,
+                color: const Color(0xffffffff),
+                size: 14,
+              ),
+              Text(
                 text,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
+                  color: textColor,
                 ),
               ),
-            ),
-            const SizedBox(
-              width: 16,
-            ),
-            const Icon(
-              Icons.close,
-              color: Color(0xffffffff),
-            ),
-          ],
+              IconButton(
+                icon: const Icon(Icons.close),
+                iconSize: 14,
+                color: const Color(0xffffffff),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                },
+              ),
+            ],
+          ),
         ),
       ),
-      backgroundColor: Colors.transparent,
-      behavior: SnackBarBehavior.floating,
-      elevation: 0,
-    ),
-  );
+    );
+  }
 }

@@ -82,18 +82,37 @@ def processing():
     print("After removing stopwords, Sentence is: ", filtered_sentence)
     print("----------------------------------------")
 
+    temp_sentence = list(filtered_sentence)
+    filtered_string = " , ".join(temp_sentence)
+        
+
     clip0 = VideoFileClip(
         r"D:\UNIVERSITY Stuff\FYP - Work\Dataset\40.mp4")
     final = clip0.subclip(0, 0)
-    words_not_found = []
+    words_found = ""
+    words_not_found = ""
+    c0 = 0
+    c1 = 0
+    isEmpty = True
     for x in filtered_sentence:
         try:
             clip = VideoFileClip(
                 fr"D:\UNIVERSITY Stuff\FYP - Work\Dataset\{x}.mp4")
             final = concatenate_videoclips([final, clip])
+            if c0 == 0:
+                words_found += x
+                c0 = 1
+            else:
+                words_found += " , " + x
+            isEmpty = False
         except OSError:
-            words_not_found.append(x)
-            print("File ", x, ".mp4 not found")
+            if c1 == 0:
+                words_not_found += x
+                c1 = 1
+            else:
+                words_not_found += " , " + x 
+            # print("File ", x, ".mp4 not found")
             continue
-    final.write_videofile(r"D:\FYP APP\STSL - APP\stsl\backend\API\video\merged.mp4")
-    return[filtered_sentence, words_not_found]
+    if(isEmpty == False):
+        final.write_videofile(r"D:\FYP APP\STSL - APP\stsl\backend\API\video\merged.mp4")
+    return[words_found, words_not_found]

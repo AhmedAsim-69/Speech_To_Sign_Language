@@ -38,7 +38,9 @@ class LocalVideoPlayer {
   static ChewieController? chewieController;
   static videoController() async {
     Uint8List bytes = base64.decode(UploadFile.message);
-    String dir = (await getExternalStorageDirectory())!.path;
+    log("bytes ==== $bytes");
+    var dir = (await getExternalStorageDirectory())!.path;
+
     File file = File("$dir/STSL.mp4");
     if (bytes.isNotEmpty) {
       await file.writeAsBytes(bytes);

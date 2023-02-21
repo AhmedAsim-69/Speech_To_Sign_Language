@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 class MultiPurposeButton extends StatelessWidget {
@@ -38,9 +36,7 @@ class MultiPurposeButton extends StatelessWidget {
       ),
       onPressed: () {
         function();
-        log("1213212312312 = $rec");
         if (altFunc != null && altFunc2 != null) {
-          log("alt called");
           altFunc!();
           altFunc2!();
         }

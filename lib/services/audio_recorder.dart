@@ -28,7 +28,10 @@ class AudioRecorder {
   static Future initRecorder() async {
     final status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
+      initRecorder();
       throw ("Microphone permission not granted");
+    } else if (status.isDenied || status.isRestricted) {
+      initRecorder();
     }
     await recorder.openRecorder();
     isRecorderReady = true;

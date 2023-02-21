@@ -19,21 +19,15 @@ def uplaod():
     if(request.method == 'POST'):
         speech = request.files['speech']
         filename = werkzeug.utils.secure_filename(speech.filename)
-        print(speech.filename)
         speech.save('D:/FYP APP/STSL - APP/stsl/backend/API/audio/'+filename)
-        print("/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-")
         sentence, words_not_found =  temp_processing.processing() 
-        print("/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-")        
         with open( r"D:\FYP APP\STSL - APP\stsl\backend\API\video\merged.mp4", "rb") as videoFile:
             text_base64 = base64.b64encode(videoFile.read())
         text_base64_string = str(text_base64)
         l = list(text_base64_string)
         del(l[0], l[0], l[-1])
         text_base64_string = "".join(l)
-        a = open( r"D:\FYP APP\STSL - APP\stsl\backend\API\video\b64_enc.txt", "w")
-        a.write(text_base64_string)
-        a.close()
-        # text_base64_string.replace("b'", "")
+        print("\n ---------------------------\nAll Done, Returning\n ---------------------------\n")
         return ({"message": text_base64_string, "sentence": sentence, "words_not_found": words_not_found})
 
 def stringToBase64(s):

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:stsl/pages/dashboard.dart';
+import 'package:stsl/pages/splashscreen.dart';
+import 'package:stsl/services/user_simple_preferences.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserSimplePreferences.init();
   runApp(const MyApp());
 }
 
@@ -18,7 +21,7 @@ class MyApp extends StatelessWidget {
           primary: const Color.fromARGB(255, 79, 168, 197),
         ),
       ),
-      home: const Dashboard(),
+      home: const SplashScreen(),
     );
   }
 }
