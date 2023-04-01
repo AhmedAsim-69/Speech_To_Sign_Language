@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_sound/flutter_sound.dart';
@@ -6,7 +8,6 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:stsl/functions/functions.dart';
 
 import 'package:stsl/pages/dashboard.dart';
-import 'package:stsl/pages/display_video.dart';
 
 import 'package:stsl/services/api_call.dart';
 import 'package:stsl/services/audio_player.dart';
@@ -16,6 +17,7 @@ import 'package:stsl/services/user_simple_preferences.dart';
 import 'package:stsl/services/video_player.dart';
 
 import 'package:stsl/widgets/multi_purpose_button.dart';
+import 'package:stsl/widgets/video_button.dart';
 
 class SpeechPage extends StatefulWidget {
   const SpeechPage({Key? key, required this.title}) : super(key: key);
@@ -85,33 +87,39 @@ class _SpeechPageState extends State<SpeechPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              StreamBuilder<RecordingDisposition>(
-                stream: AudioRecorder.recorder.onProgress,
-                builder: (context, snapshot) {
-                  final duration = snapshot.hasData
-                      ? snapshot.data!.duration
-                      : Duration.zero;
-                  return Text('${duration.inSeconds} s');
-                },
-              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   MultiPurposeButton(
-                      icon: Icons.abc,
+                      icon: (!isRec) ? Icons.abc : Icons.phone_paused,
                       function: MyFunctions.startRec,
                       altFunc: MyFunctions.stopAudio,
                       updateFunc: _updateState,
-                      bgColor: (!isRec) ? Colors.red : Colors.red[100],
+                      bgColor: (!isRec) ? Colors.blue[400] : Colors.blue[100],
                       iconColor: Colors.white,
                       rec: isRec),
+                  StreamBuilder<RecordingDisposition>(
+                    stream: AudioRecorder.recorder.onProgress,
+                    builder: (context, snapshot) {
+                      final duration = snapshot.hasData
+                          ? snapshot.data!.duration
+                          : Duration.zero;
+                      return Text(
+                        "Recording: ${duration.inSeconds} s",
+                        style: const TextStyle(
+                            color: Colors.blueGrey,
+                            fontSize: 14,
+                            fontStyle: FontStyle.italic),
+                      );
+                    },
+                  ),
                   MultiPurposeButton(
                       icon: Icons.stop,
                       function: MyFunctions.stopRec,
                       updateFunc: _updateState,
                       altFunc: AudioPlay.setAudio,
                       altFunc2: _audioFuncs,
-                      bgColor: (isRec) ? Colors.green : Colors.green[100],
+                      bgColor: (isRec) ? Colors.red[400] : Colors.red[100],
                       iconColor: Colors.white,
                       rec: isRec),
                 ],
@@ -139,10 +147,10 @@ class _SpeechPageState extends State<SpeechPage> {
                     ),
                     MultiPurposeButton(
                       icon: (isPlay) ? Icons.pause : Icons.play_arrow,
-                      altIcon: Icons.pause,
                       function: MyFunctions.playAudio,
                       updateFunc: _updateState,
                       altFunc: _audioFuncs,
+                      bgColor: Colors.blue[400],
                       iconColor: Colors.white,
                     ),
                     MultiPurposeButton(
@@ -150,7 +158,7 @@ class _SpeechPageState extends State<SpeechPage> {
                         function: MyFunctions.stopAudio,
                         updateFunc: _updateState,
                         altFunc: _audioFuncs,
-                        bgColor: Colors.red,
+                        bgColor: Colors.red[400],
                         iconColor: Colors.white),
                     Text(FormatTime.formatTime(AudioPlay.duration)),
                   ],
@@ -176,18 +184,7 @@ class _SpeechPageState extends State<SpeechPage> {
                     : '''No Pose found for following words: 
                     ${ApiCall.wordsNotFound}'''),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const DisplayVideo()),
-                    );
-                  });
-                },
-                child: const Text('Play Video!'),
-              ),
+              const VideoButton(),
             ],
           ),
         ),

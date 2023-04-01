@@ -8,6 +8,7 @@ import 'package:stsl/pages/display_video.dart';
 import 'package:stsl/services/api_call.dart';
 import 'package:stsl/services/user_simple_preferences.dart';
 import 'package:stsl/services/video_player.dart';
+import 'package:stsl/widgets/video_button.dart';
 
 class TextPage extends StatefulWidget {
   const TextPage({Key? key, required this.title}) : super(key: key);
@@ -120,18 +121,7 @@ class _TextPageState extends State<TextPage> {
                     : '''No Pose found for following words: 
                     ${ApiCall.wordsNotFound}'''),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const DisplayVideo()),
-                    );
-                  });
-                },
-                child: const Text('Play Video!'),
-              ),
+              const VideoButton(),
             ],
           ),
         ),

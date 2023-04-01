@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io' as io;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -9,15 +10,24 @@ import 'package:stsl/services/audio_recorder.dart';
 
 class MyFunctions {
   static Future<void> startRec() async {
-    if (!isRec) {
+    if (!isRec && !isPause) {
       isRec = true;
       await AudioRecorder.startRecording();
+    } else if (isRec && !isPause) {
+      isRec = true;
+      isPause = true;
+      await AudioRecorder.pauseRecording();
+    } else {
+      isRec = true;
+      isPause = false;
+      await AudioRecorder.resumeRecording();
     }
   }
 
   static Future<void> stopRec() async {
     if (isRec) {
       isRec = false;
+      isPause = false;
       await AudioRecorder.stopRecording();
     }
   }

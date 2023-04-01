@@ -16,6 +16,16 @@ class AudioRecorder {
     await recorder.stopRecorder();
   }
 
+  static Future pauseRecording() async {
+    if (!isRecorderReady) return;
+    await recorder.pauseRecorder();
+  }
+
+  static Future resumeRecording() async {
+    if (!isRecorderReady) return;
+    await recorder.resumeRecorder();
+  }
+
   static Future initRecorder() async {
     final status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {

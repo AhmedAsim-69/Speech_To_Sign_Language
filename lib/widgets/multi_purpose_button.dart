@@ -29,6 +29,10 @@ class MultiPurposeButton extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         primary: bgColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        minimumSize: const Size(80, 45),
       ),
       child: Icon(
         icon,

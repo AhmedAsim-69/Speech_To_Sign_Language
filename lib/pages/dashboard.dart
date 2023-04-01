@@ -4,6 +4,7 @@ import 'package:stsl/pages/speech_page.dart';
 import 'package:stsl/pages/text_page.dart';
 
 bool isRec = false;
+bool isPause = false;
 bool isPlay = false;
 bool isSpeech = false;
 
@@ -17,7 +18,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final editingController = TextEditingController();
 
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     List<Widget> widgetOptions = <Widget>[
