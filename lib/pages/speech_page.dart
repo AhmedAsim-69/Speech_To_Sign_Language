@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_sound/flutter_sound.dart';
@@ -18,6 +16,7 @@ import 'package:stsl/services/video_player.dart';
 
 import 'package:stsl/widgets/multi_purpose_button.dart';
 import 'package:stsl/widgets/video_button.dart';
+import 'package:stsl/widgets/words_container.dart';
 
 class SpeechPage extends StatefulWidget {
   const SpeechPage({Key? key, required this.title}) : super(key: key);
@@ -45,7 +44,9 @@ class _SpeechPageState extends State<SpeechPage> {
   @override
   void dispose() {
     AudioRecorder.recorder.closeRecorder();
-    LocalVideoPlayer.chewieController!.dispose();
+    if (LocalVideoPlayer.chewieController != null) {
+      LocalVideoPlayer.chewieController!.dispose();
+    }
     super.dispose();
   }
 
@@ -73,6 +74,7 @@ class _SpeechPageState extends State<SpeechPage> {
       appBar: AppBar(
         title: Text(widget.title),
         centerTitle: true,
+        backgroundColor: Colors.blue[400],
       ),
       body: ModalProgressHUD(
         color: Colors.black,
@@ -87,6 +89,9 @@ class _SpeechPageState extends State<SpeechPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
+              WordsContainer(text: ApiCall.wordsFound, altText: "No Video Yet"),
+              WordsContainer(
+                  text: ApiCall.wordsNotFound, altText: "No Sentence Yet"),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -171,18 +176,6 @@ class _SpeechPageState extends State<SpeechPage> {
                 child: const Text(
                   "Upload Speech",
                 ),
-              ),
-              Center(
-                child: Text((ApiCall.wordsFound == "")
-                    ? "No Video Yet"
-                    : '''The video is formed for: 
-                    ${ApiCall.wordsFound}'''),
-              ),
-              Center(
-                child: Text((ApiCall.wordsFound == "")
-                    ? "No Sentence Yet"
-                    : '''No Pose found for following words: 
-                    ${ApiCall.wordsNotFound}'''),
               ),
               const VideoButton(),
             ],

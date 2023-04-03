@@ -3,12 +3,11 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 import 'package:stsl/functions/functions.dart';
 
-import 'package:stsl/pages/display_video.dart';
-
 import 'package:stsl/services/api_call.dart';
 import 'package:stsl/services/user_simple_preferences.dart';
-import 'package:stsl/services/video_player.dart';
 import 'package:stsl/widgets/video_button.dart';
+import 'package:stsl/services/video_player.dart';
+import 'package:stsl/widgets/words_container.dart';
 
 class TextPage extends StatefulWidget {
   const TextPage({Key? key, required this.title}) : super(key: key);
@@ -32,7 +31,9 @@ class _TextPageState extends State<TextPage> {
 
   @override
   void dispose() {
-    LocalVideoPlayer.chewieController!.dispose();
+    if (LocalVideoPlayer.chewieController != null) {
+      LocalVideoPlayer.chewieController!.dispose();
+    }
     super.dispose();
   }
 
@@ -62,6 +63,9 @@ class _TextPageState extends State<TextPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
+              WordsContainer(text: ApiCall.wordsFound, altText: "No Video Yet"),
+              WordsContainer(
+                  text: ApiCall.wordsNotFound, altText: "No Sentence Yet"),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 child: TextFormField(
@@ -108,18 +112,6 @@ class _TextPageState extends State<TextPage> {
                 child: const Text(
                   "Upload Text",
                 ),
-              ),
-              Center(
-                child: Text((ApiCall.wordsFound == "")
-                    ? "No Video Yet"
-                    : '''The video is formed for: 
-                    ${ApiCall.wordsFound}'''),
-              ),
-              Center(
-                child: Text((ApiCall.wordsFound == "")
-                    ? "No Sentence Yet"
-                    : '''No Pose found for following words: 
-                    ${ApiCall.wordsNotFound}'''),
               ),
               const VideoButton(),
             ],
