@@ -89,9 +89,14 @@ class _SpeechPageState extends State<SpeechPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              WordsContainer(text: ApiCall.wordsFound, altText: "No Video Yet"),
               WordsContainer(
-                  text: ApiCall.wordsNotFound, altText: "No Sentence Yet"),
+                  text: ApiCall.wordsFound,
+                  altText: "No Video Yet",
+                  poseText: "Pose Found for the following words: "),
+              WordsContainer(
+                  text: ApiCall.wordsNotFound,
+                  altText: "No Sentence Yet",
+                  poseText: "Pose Not Found for the following words: "),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [

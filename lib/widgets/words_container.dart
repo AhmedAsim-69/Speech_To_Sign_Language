@@ -5,10 +5,12 @@ class WordsContainer extends StatelessWidget {
     Key? key,
     required this.text,
     required this.altText,
+    required this.poseText,
   }) : super(key: key);
 
   final String text;
   final String altText;
+  final String poseText;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -24,11 +26,14 @@ class WordsContainer extends StatelessWidget {
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        child: Center(
-          child: Text((text == "")
-              ? altText
-              : '''No Pose found for following words: 
-          $text'''),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Center(
+            child: Text((text == "")
+                ? altText
+                : '''$poseText: 
+            $text'''),
+          ),
         ),
       ),
     );

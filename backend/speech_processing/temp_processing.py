@@ -17,13 +17,13 @@ def takecommand(*args):
     try:
         print("Recognizing the speech input.....")
         if args:
-            translator = tTranslator(to_lang = 'en-US')
+            translator = tTranslator(to_lang = 'ur-PK')
             temp = translator.translate(args[0])
         else:
             hello = sr.AudioFile(r'D:\FYP APP\STSL - APP\stsl\backend\API\audio\audio.wav')
             with hello as source:
                 audio1 = r.record(source)
-            temp = r.recognize_google(audio1, language='en-US')
+            temp = r.recognize_google(audio1, language='ur-PK')
         print("\n-----------------------------------------")
         print(f"The User said: {temp}.")
         print("-----------------------------------------\n")
@@ -43,7 +43,7 @@ def lemitize_str(STRING):
 
 def videoFormation(sentence):
     clip0 = VideoFileClip(
-        r"D:\UNIVERSITY Stuff\FYP - Work\Dataset\40.mp4")
+        r"D:\UNIVERSITY Stuff\FYP - Work\Dataset Lemmatized\40.mp4")
     final = clip0.subclip(0, 0)
     words_found = ""
     words_not_found = ""
@@ -53,7 +53,7 @@ def videoFormation(sentence):
     for x in sentence:
         try:
             clip = VideoFileClip(
-                fr"D:\UNIVERSITY Stuff\FYP - Work\Dataset\{x}.mp4")
+                fr"D:\UNIVERSITY Stuff\FYP - Work\Dataset Lemmatized\{x}.mp4")
             final = concatenate_videoclips([final, clip])
             if c0 == 0:
                 words_found += x

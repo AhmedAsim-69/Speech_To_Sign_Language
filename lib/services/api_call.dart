@@ -27,8 +27,8 @@ class ApiCall {
     File selectedFile = File(
         '/storage/emulated/0/Android/data/com.example.stsl/files/audio.wav');
 
-    final request = http.MultipartRequest(
-        "POST", Uri.parse("https://5567-39-46-32-46.in.ngrok.io/uploadSpeech"));
+    final request = http.MultipartRequest("POST",
+        Uri.parse("https://7cb2-39-55-190-227.in.ngrok.io/uploadSpeech"));
 
     final headers = {
       "Content-type": " multipart/form-data",
