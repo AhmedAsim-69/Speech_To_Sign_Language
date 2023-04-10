@@ -27,8 +27,8 @@ class ApiCall {
     File selectedFile = File(
         '/storage/emulated/0/Android/data/com.example.stsl/files/audio.wav');
 
-    final request = http.MultipartRequest("POST",
-        Uri.parse("https://7cb2-39-55-190-227.in.ngrok.io/uploadSpeech"));
+    final request = http.MultipartRequest(
+        "POST", Uri.parse("http://192.168.10.5:4000/uploadSpeech"));
 
     final headers = {
       "Content-type": " multipart/form-data",
@@ -53,12 +53,10 @@ class ApiCall {
 
       isFetched = true;
       LocalVideoPlayer.videoController();
-      isLoading = false;
 
       if (updateState != null) {
         UserSimplePreferences.storeWords(wordsFound);
         UserSimplePreferences.storeNotWords(wordsNotFound);
-        updateState();
         if (resJson["message"] == "No Pose Could be made") {
           ShowSnackbar.showsnackbar(Colors.black, Colors.yellow, Icons.warning,
               "No Pose Could be made.", context!);
@@ -66,11 +64,14 @@ class ApiCall {
           ShowSnackbar.showsnackbar(Colors.black, Colors.green, Icons.done,
               "Sign is available to be played.", context!);
         }
+        isLoading = false;
+        updateState();
       }
     } else {
       isLoading = false;
       ShowSnackbar.showsnackbar(
           Colors.black, Colors.red, Icons.warning, "Backend Error.", context!);
+      updateState!();
     }
   }
 
@@ -82,10 +83,8 @@ class ApiCall {
       updateState();
     }
 
-    final request = http.MultipartRequest(
-        "POST",
-        Uri.parse(
-            "https://5567-39-46-32-46.in.ngrok.io/uploadText?text=$sentence"));
+    final request = http.MultipartRequest("POST",
+        Uri.parse("http://192.168.10.5:4000/uploadText?text=$sentence"));
 
     final headers = {
       "Content-type": " multipart/form-data",
@@ -111,19 +110,21 @@ class ApiCall {
       if (updateState != null) {
         UserSimplePreferences.storeWords(wordsFound);
         UserSimplePreferences.storeNotWords(wordsNotFound);
-        updateState();
         if (resJson["message"] == "No Pose Could be made") {
           ShowSnackbar.showsnackbar(Colors.black, Colors.yellow, Icons.warning,
               "No Pose Could be made.", context!);
         } else {
           ShowSnackbar.showsnackbar(Colors.black, Colors.green, Icons.done,
               "Sign is available to be played.", context!);
+          isLoading = false;
+          updateState();
         }
       }
     } else {
       isLoading = false;
       ShowSnackbar.showsnackbar(
           Colors.black, Colors.red, Icons.warning, "Backend Error.", context!);
+      updateState!();
     }
   }
 }

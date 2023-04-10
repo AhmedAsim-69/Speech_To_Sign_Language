@@ -10,20 +10,19 @@ from nltk.tokenize import word_tokenize
 import speech_recognition as sr
 from googletrans import Translator
 from translate import Translator as tTranslator
-from gtts import gTTS
 
 def takecommand(*args):
     r = sr.Recognizer()
     try:
         print("Recognizing the speech input.....")
         if args:
-            translator = tTranslator(to_lang = 'ur-PK')
+            translator = tTranslator(to_lang = 'en-US')
             temp = translator.translate(args[0])
         else:
-            hello = sr.AudioFile(r'D:\FYP APP\STSL - APP\stsl\backend\API\audio\audio.wav')
+            hello = sr.AudioFile(r'D:\FYP APP\STSL - APP\stsl\backend\API\audio.wav')
             with hello as source:
                 audio1 = r.record(source)
-            temp = r.recognize_google(audio1, language='ur-PK')
+            temp = r.recognize_google(audio1, language = 'ur-IN')
         print("\n-----------------------------------------")
         print(f"The User said: {temp}.")
         print("-----------------------------------------\n")
@@ -73,7 +72,7 @@ def videoFormation(sentence):
         words_not_found = "No Words Found  "
 
     if(isEmpty == False):
-        final.write_videofile(r"D:\FYP APP\STSL - APP\stsl\backend\API\video\merged.mp4")
+        final.write_videofile(r"D:\FYP APP\STSL - APP\stsl\backend\API\merged.mp4")
     return[words_found, words_not_found]
 
 
@@ -86,9 +85,9 @@ def processing(*args):
     to_lang = 'ur'
     if args:
         print(f"args = {args}")
-        text_to_translate = translator.translate(takecommand(args[0]), dest=to_lang)
+        text_to_translate = translator.translate(takecommand(args[0]), src = 'en', dest=to_lang)
     else:
-        text_to_translate = translator.translate(takecommand(), dest=to_lang)
+        text_to_translate = translator.translate(takecommand(), src = 'en', dest=to_lang)
         print("NOT ARGS")
 
     text = text_to_translate.text
