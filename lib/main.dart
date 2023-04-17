@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:stsl/pages/splashscreen.dart';
 import 'package:stsl/services/user_simple_preferences.dart';
-import 'package:provider/provider.dart';
 import 'package:stsl/utils/theme_data.dart';
 
 void main() async {

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io' as io;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';

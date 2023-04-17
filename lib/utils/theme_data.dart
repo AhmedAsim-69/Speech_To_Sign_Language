@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:stsl/services/user_simple_preferences.dart';
 
 class ThemeNotifier with ChangeNotifier {
