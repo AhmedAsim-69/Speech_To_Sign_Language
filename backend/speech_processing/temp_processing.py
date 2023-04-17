@@ -16,13 +16,14 @@ def takecommand(*args):
     try:
         print("Recognizing the speech input.....")
         if args:
-            translator = tTranslator(to_lang = 'en-US')
+            # translator = tTranslator(to_lang = 'en-US')
+            translator = tTranslator(to_lang = 'ur-PK')
             temp = translator.translate(args[0])
         else:
             hello = sr.AudioFile(r'D:\FYP APP\STSL - APP\stsl\backend\API\audio.wav')
             with hello as source:
                 audio1 = r.record(source)
-            temp = r.recognize_google(audio1, language = 'ur-IN')
+            temp = r.recognize_google(audio1, language = 'ur-PK')
         print("\n-----------------------------------------")
         print(f"The User said: {temp}.")
         print("-----------------------------------------\n")
@@ -44,50 +45,55 @@ def videoFormation(sentence):
     clip0 = VideoFileClip(
         r"D:\UNIVERSITY Stuff\FYP - Work\Dataset Lemmatized\40.mp4")
     final = clip0.subclip(0, 0)
-    words_found = ""
-    words_not_found = ""
-    c0 = 0
-    c1 = 0
+    words_found = []
+    words_not_found = []
     isEmpty = True
+    file_found = False
+    l  = len(sentence)
+    skip = 0
+    for i in range(l, 0, -1): #9
+        for j in range(len(sentence)):
+            start_index = l - i
+            end_index = l - j
+            if skip > 0:
+                skip = skip - 1
+                break
+            if(start_index < end_index):
+                file_name = " ".join(sentence[start_index : end_index])
+                if os.path.isfile(fr"D:\UNIVERSITY Stuff\FYP - Work\Dataset Not Lemmatized\{file_name + '.mp4'}"):
+                    skip = (end_index) - (start_index) - 1                     
+                    clip = VideoFileClip(fr"D:\UNIVERSITY Stuff\FYP - Work\Dataset Not Lemmatized\{file_name + '.mp4'}")
+                    final = concatenate_videoclips([final, clip])
+                    words_found.append(file_name)
+                    isEmpty = False
+                    file_found = True
+                    break
+
+    if not file_found:
+        print("No matching file found.")
+    else:
+        print("Output video file created with the following words: ", words_found)
+   
     for x in sentence:
-        try:
-            clip = VideoFileClip(
-                fr"D:\UNIVERSITY Stuff\FYP - Work\Dataset Lemmatized\{x}.mp4")
-            final = concatenate_videoclips([final, clip])
-            if c0 == 0:
-                words_found += x
-                c0 = 1
-            else:
-                words_found += " , " + x
-            isEmpty = False
-        except OSError:
-            if c1 == 0:
-                words_not_found += x
-                c1 = 1
-            else:
-                words_not_found += " , " + x 
-            continue
-    if(words_found == "" and words_not_found == ""):
-        words_found = " No Words Found "
-        words_not_found = "No Words Found  "
+        if x not in words_found:
+            words_not_found.append(x)
 
     if(isEmpty == False):
         final.write_videofile(r"D:\FYP APP\STSL - APP\stsl\backend\API\merged.mp4")
-    return[words_found, words_not_found]
-
+    return[", ".join(words_found), ", ".join(words_not_found)]
 
 
 def processing(*args):
-    text_to_translate = ""
-    
     translator = Translator()
+
     print("The text is being translated into 'Urdu' Language.\n")
     to_lang = 'ur'
+
     if args:
         print(f"args = {args}")
-        text_to_translate = translator.translate(takecommand(args[0]), src = 'en', dest=to_lang)
+        text_to_translate = translator.translate(takecommand(args[0]), dest=to_lang)
     else:
-        text_to_translate = translator.translate(takecommand(), src = 'en', dest=to_lang)
+        text_to_translate = translator.translate(takecommand(), dest=to_lang)
         print("NOT ARGS")
 
     text = text_to_translate.text
@@ -99,18 +105,20 @@ def processing(*args):
     TEST_SENTENCE = text
     filtered_sentence = ""
 
-    LEMM_TEST_SENTENCE = lemitize_str(TEST_SENTENCE)
-    word_tokens = word_tokenize(LEMM_TEST_SENTENCE)
+    LEMM_TEST_SENTENCE = (TEST_SENTENCE)
+    # word_tokens = word_tokenize(LEMM_TEST_SENTENCE)
 
-    for w in word_tokens:
-        if w not in urdu_stopwords:
-            filtered_sentence += w + " "
+    # for w in word_tokens:
+    #     if w not in urdu_stopwords:
+    #         filtered_sentence += w + " "
     
     print("----------------------------------------")
     print("Lemmatized Sentence is: ", LEMM_TEST_SENTENCE)
     print("----------------------------------------")
 
-    filtered_sentence = word_tokenize(filtered_sentence)
+    filtered_sentence = word_tokenize(LEMM_TEST_SENTENCE)
+    # filtered_sentence = word_tokenize(LEMM_TEST_SENTENCE)
+    # filtered_sentence1 = " ".join(filtered_sentence)
     
     print("After removing stopwords, Sentence is: ", filtered_sentence)
     print("----------------------------------------")
