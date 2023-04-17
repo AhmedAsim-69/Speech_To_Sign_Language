@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:provider/provider.dart';
 
 import 'package:stsl/functions/functions.dart';
 
@@ -13,6 +14,7 @@ import 'package:stsl/services/audio_recorder.dart';
 import 'package:stsl/services/format_time.dart';
 import 'package:stsl/services/user_simple_preferences.dart';
 import 'package:stsl/services/video_player.dart';
+import 'package:stsl/utils/theme_data.dart';
 
 import 'package:stsl/widgets/multi_purpose_button.dart';
 import 'package:stsl/widgets/video_button.dart';
@@ -70,123 +72,142 @@ class _SpeechPageState extends State<SpeechPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-        backgroundColor: Colors.blue[400],
-      ),
-      body: ModalProgressHUD(
-        color: Colors.black,
-        opacity: 0.4,
-        blur: 1.0,
-        progressIndicator: const CircularProgressIndicator(
-          color: Colors.red,
-          backgroundColor: Colors.yellow,
+    return Consumer<ThemeNotifier>(builder: (context, theme, _) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          centerTitle: true,
+          backgroundColor: Colors.blue[400],
         ),
-        inAsyncCall: ApiCall.isLoading,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              WordsContainer(
-                  text: ApiCall.wordsFound,
-                  altText: "No Video Yet",
-                  poseText: "Pose Found for the following words: "),
-              WordsContainer(
-                  text: ApiCall.wordsNotFound,
-                  altText: "No Sentence Yet",
-                  poseText: "Pose Not Found for the following words: "),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  MultiPurposeButton(
-                      icon: (!isRec) ? Icons.abc : Icons.phone_paused,
-                      function: MyFunctions.startRec,
-                      altFunc: MyFunctions.stopAudio,
-                      updateFunc: _updateState,
-                      bgColor: (!isRec) ? Colors.blue[400] : Colors.blue[100],
-                      iconColor: Colors.white,
-                      rec: isRec),
-                  StreamBuilder<RecordingDisposition>(
-                    stream: AudioRecorder.recorder.onProgress,
-                    builder: (context, snapshot) {
-                      final duration = snapshot.hasData
-                          ? snapshot.data!.duration
-                          : Duration.zero;
-                      return Text(
-                        "Recording: ${duration.inSeconds} s",
-                        style: const TextStyle(
-                            color: Colors.blueGrey,
-                            fontSize: 14,
-                            fontStyle: FontStyle.italic),
-                      );
-                    },
-                  ),
-                  MultiPurposeButton(
-                      icon: Icons.stop,
-                      function: MyFunctions.stopRec,
-                      updateFunc: _updateState,
-                      altFunc: AudioPlay.setAudio,
-                      altFunc2: _audioFuncs,
-                      bgColor: (isRec) ? Colors.red[400] : Colors.red[100],
-                      iconColor: Colors.white,
-                      rec: isRec),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15, 2, 15, 2),
-                child: Slider(
-                  min: 0,
-                  max: AudioPlay.duration.inMicroseconds.ceilToDouble(),
-                  divisions: 200,
-                  value: AudioPlay.position.inMicroseconds.ceilToDouble(),
-                  onChanged: ((value) {
-                    AudioPlay.audioPlayer
-                        .seek(Duration(microseconds: value.toInt()));
-                  }),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+        body: ModalProgressHUD(
+          color: Colors.black,
+          opacity: 0.4,
+          blur: 1.0,
+          progressIndicator: const CircularProgressIndicator(
+            color: Colors.red,
+            backgroundColor: Colors.yellow,
+          ),
+          inAsyncCall: ApiCall.isLoading,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                WordsContainer(
+                    text: ApiCall.wordsFound,
+                    altText: "No Video Yet",
+                    poseText: "Pose Found for the following words: "),
+                WordsContainer(
+                    text: ApiCall.wordsNotFound,
+                    altText: "No Sentence Yet",
+                    poseText: "Pose Not Found for the following words: "),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text(
-                      FormatTime.formatTime(AudioPlay.position),
-                    ),
                     MultiPurposeButton(
-                      icon: (isPlay) ? Icons.pause : Icons.play_arrow,
-                      function: MyFunctions.playAudio,
-                      updateFunc: _updateState,
-                      altFunc: _audioFuncs,
-                      bgColor: Colors.blue[400],
-                      iconColor: Colors.white,
+                        icon: (!isRec) ? Icons.abc : Icons.phone_paused,
+                        function: MyFunctions.startRec,
+                        altFunc: MyFunctions.stopAudio,
+                        updateFunc: _updateState,
+                        bgColor: (!isRec) ? Colors.blue[400] : Colors.blue[100],
+                        iconColor: Colors.white,
+                        rec: isRec),
+                    StreamBuilder<RecordingDisposition>(
+                      stream: AudioRecorder.recorder.onProgress,
+                      builder: (context, snapshot) {
+                        final duration = snapshot.hasData
+                            ? snapshot.data!.duration
+                            : Duration.zero;
+                        return Text(
+                          "Recording: ${duration.inSeconds} s",
+                          style: const TextStyle(
+                              color: Colors.blueGrey,
+                              fontSize: 14,
+                              fontStyle: FontStyle.italic),
+                        );
+                      },
                     ),
                     MultiPurposeButton(
                         icon: Icons.stop,
-                        function: MyFunctions.stopAudio,
+                        function: MyFunctions.stopRec,
                         updateFunc: _updateState,
-                        altFunc: _audioFuncs,
-                        bgColor: Colors.red[400],
-                        iconColor: Colors.white),
-                    Text(FormatTime.formatTime(AudioPlay.duration)),
+                        altFunc: AudioPlay.setAudio,
+                        altFunc2: _audioFuncs,
+                        bgColor: (isRec) ? Colors.red[400] : Colors.red[100],
+                        iconColor: Colors.white,
+                        rec: isRec),
                   ],
                 ),
-              ),
-              TextButton(
-                onPressed: () async {
-                  await ApiCall.uploadSpeech(_updateState, context);
-                },
-                child: const Text(
-                  "Upload Speech",
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 2, 15, 2),
+                  child: Slider(
+                    min: 0,
+                    max: AudioPlay.duration.inMicroseconds.ceilToDouble(),
+                    divisions: 200,
+                    value: AudioPlay.position.inMicroseconds.ceilToDouble(),
+                    onChanged: ((value) {
+                      AudioPlay.audioPlayer
+                          .seek(Duration(microseconds: value.toInt()));
+                    }),
+                  ),
                 ),
-              ),
-              const VideoButton(),
-            ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(2, 1, 2, 1),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        FormatTime.formatTime(AudioPlay.position),
+                      ),
+                      MultiPurposeButton(
+                        icon: (isPlay) ? Icons.pause : Icons.play_arrow,
+                        function: MyFunctions.playAudio,
+                        updateFunc: _updateState,
+                        altFunc: _audioFuncs,
+                        bgColor: Colors.blue[400],
+                        iconColor: Colors.white,
+                      ),
+                      MultiPurposeButton(
+                          icon: Icons.stop,
+                          function: MyFunctions.stopAudio,
+                          updateFunc: _updateState,
+                          altFunc: _audioFuncs,
+                          bgColor: Colors.red[400],
+                          iconColor: Colors.white),
+                      Text(FormatTime.formatTime(AudioPlay.duration)),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => {
+                        theme.setLightMode(),
+                      },
+                      child: const Text('Set Light Theme'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => {
+                        theme.setDarkMode(),
+                      },
+                      child: const Text('Set Dark theme'),
+                    ),
+                  ],
+                ),
+                TextButton(
+                  onPressed: () async {
+                    await ApiCall.uploadSpeech(_updateState, context);
+                  },
+                  child: const Text(
+                    "Upload Speech",
+                  ),
+                ),
+                const VideoButton(),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
