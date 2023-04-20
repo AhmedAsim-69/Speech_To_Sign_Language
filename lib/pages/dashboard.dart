@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:stsl/pages/speech_page.dart';
 import 'package:stsl/pages/text_page.dart';
+import 'package:stsl/utils/theme_data.dart';
 
 bool isRec = false;
 bool isPause = false;
@@ -16,7 +18,14 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  void onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   final editingController = TextEditingController();
+  bool _isDarkMode = true;
 
   int _selectedIndex = 0;
   @override
@@ -29,32 +38,63 @@ class _DashboardState extends State<Dashboard> {
         title: 'Text Page',
       ),
     ];
-    void onItemTapped(int index) {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
 
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 241, 247, 249),
-      body: widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.white.withOpacity(0.7),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings_voice_rounded, size: 28),
-            label: 'Speech',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.text_fields, size: 28),
-            label: 'Text',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
-        onTap: onItemTapped,
-      ),
-    );
+    return Consumer<ThemeNotifier>(builder: (context, theme, _) {
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.blue[400],
+          title: (_selectedIndex == 0)
+              ? const Text("Speech Page")
+              : const Text("Text Page"),
+        ),
+        drawer: Drawer(
+            child: ListView(
+          children: [
+            Container(
+              height: 200,
+              decoration: const BoxDecoration(
+                color: Colors.blue,
+                image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: NetworkImage(
+                        'https://oflutter.com/wp-content/uploads/2021/02/profile-bg3.jpg')),
+              ),
+              child: const Center(child: Text('Pakistan Sign Express')),
+            ),
+            SwitchListTile(
+                title: const Text("Dark Mode"),
+                value: _isDarkMode,
+                onChanged: (value) {
+                  _isDarkMode = value;
+                  if (_isDarkMode) {
+                    theme.setDarkMode();
+                  } else {
+                    (theme.setLightMode());
+                  }
+                }),
+          ],
+        )),
+        backgroundColor: const Color.fromARGB(255, 241, 247, 249),
+        body: widgetOptions.elementAt(_selectedIndex),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Theme.of(context).primaryColor,
+          unselectedItemColor: Colors.white.withOpacity(0.7),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings_voice_rounded, size: 28),
+              label: 'Speech',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.text_fields, size: 28),
+              label: 'Text',
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.white,
+          onTap: onItemTapped,
+        ),
+      );
+    });
   }
 }
