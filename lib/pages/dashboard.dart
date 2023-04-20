@@ -31,12 +31,8 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     List<Widget> widgetOptions = <Widget>[
-      const SpeechPage(
-        title: 'Speech Page',
-      ),
-      const TextPage(
-        title: 'Text Page',
-      ),
+      const SpeechPage(),
+      const TextPage(),
     ];
 
     return Consumer<ThemeNotifier>(builder: (context, theme, _) {

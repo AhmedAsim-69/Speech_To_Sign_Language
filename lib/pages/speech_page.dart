@@ -22,9 +22,9 @@ import 'package:stsl/widgets/video_button.dart';
 import 'package:stsl/widgets/words_container.dart';
 
 class SpeechPage extends StatefulWidget {
-  const SpeechPage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const SpeechPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<SpeechPage> createState() => _SpeechPageState();
@@ -75,11 +75,6 @@ class _SpeechPageState extends State<SpeechPage> {
   Widget build(BuildContext context) {
     return Consumer<ThemeNotifier>(builder: (context, theme, _) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          centerTitle: true,
-          backgroundColor: Colors.blue[400],
-        ),
         body: ModalProgressHUD(
           color: Colors.black,
           opacity: 0.4,
@@ -177,23 +172,6 @@ class _SpeechPageState extends State<SpeechPage> {
                       Text(FormatTime.formatTime(AudioPlay.duration)),
                     ],
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () => {
-                        theme.setLightMode(),
-                      },
-                      child: const Text('Set Light Theme'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => {
-                        theme.setDarkMode(),
-                      },
-                      child: const Text('Set Dark theme'),
-                    ),
-                  ],
                 ),
                 TextButton(
                   onPressed: () async {
