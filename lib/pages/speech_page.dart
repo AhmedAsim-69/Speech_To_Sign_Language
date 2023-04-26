@@ -32,6 +32,11 @@ class SpeechPage extends StatefulWidget {
   State<SpeechPage> createState() => _SpeechPageState();
 }
 
+bool isRec = false;
+bool isPause = false;
+bool isPlay = false;
+bool isSpeech = false;
+
 class _SpeechPageState extends State<SpeechPage> {
   final RecorderController recorderController = RecorderController();
 
