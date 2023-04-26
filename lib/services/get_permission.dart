@@ -5,7 +5,7 @@ import 'dart:developer';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:stsl/pages/dashboard.dart';
+import 'package:stsl/pages/speech_page.dart';
 
 import 'package:stsl/widgets/snackbar.dart';
 
@@ -22,7 +22,7 @@ class GetPermission {
       await preferences.setInt('isBoarding', 0);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const Dashboard()),
+        MaterialPageRoute(builder: (context) => const SpeechPage()),
       );
     } else {
       ShowSnackbar.showsnackbar(
