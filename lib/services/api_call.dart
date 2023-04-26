@@ -25,10 +25,10 @@ class ApiCall {
     }
 
     File selectedFile = File(
-        '/storage/emulated/0/Android/data/com.example.stsl/files/audio.wav');
+        '/storage/emulated/0/Android/data/com.example.stsl/files/audio.m4a');
 
     final request = http.MultipartRequest(
-        "POST", Uri.parse("http://192.168.10.5:4000/uploadSpeech"));
+        "POST", Uri.parse("http://192.168.10.18:4000/uploadSpeech"));
 
     final headers = {
       "Content-type": " multipart/form-data",
@@ -84,7 +84,7 @@ class ApiCall {
     }
 
     final request = http.MultipartRequest("POST",
-        Uri.parse("http://192.168.10.5:4000/uploadText?text=$sentence"));
+        Uri.parse("http://192.168.10.18:4000/uploadText?text=$sentence"));
 
     final headers = {
       "Content-type": " multipart/form-data",
