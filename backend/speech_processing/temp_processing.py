@@ -10,9 +10,16 @@ from nltk.tokenize import word_tokenize
 import speech_recognition as sr
 from googletrans import Translator
 from translate import Translator as tTranslator
+from pydub import AudioSegment
 
 def takecommand(*args):
     r = sr.Recognizer()
+    # read the input file
+    AudioSegment.converter = r'D:\UNIVERSITY Stuff\FYP - Work\ffmpeg\bin\ffmpeg.exe'
+    sound = AudioSegment.from_file(r'D:\FYP APP\STSL - APP\stsl\backend\API\audio.m4a', format='m4a')
+
+    # export the output file
+    sound.export(r'D:\FYP APP\STSL - APP\stsl\backend\API\audio.wav', format='wav')
     try:
         print("Recognizing the speech input.....")
         if args:
