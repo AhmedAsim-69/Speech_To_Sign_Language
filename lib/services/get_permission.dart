@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'dart:developer';
-
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,17 +24,18 @@ class GetPermission {
       );
     } else {
       ShowSnackbar.showsnackbar(
-          Colors.black,
-          Colors.white,
+          Colors.black54,
+          Colors.orange,
           Icons.warning,
-          "Please re-open app and/or Enable Permissions from Settings",
+          '''Please re-open app and/or 
+          Enable Permissions from Settings''',
           context);
     }
     if (status.toString().contains('PermissionStatus.permanentlyDenied') ||
         status.toString().contains('PermissionStatus.restricted')) {
-      ShowSnackbar.showsnackbar(Colors.black, Colors.yellow, Icons.warning,
+      ShowSnackbar.showsnackbar(Colors.black54, Colors.orange, Icons.warning,
           "Please enable required Permissions", context);
-      log("denieedddd");
+
       openAppSettings();
     }
   }
