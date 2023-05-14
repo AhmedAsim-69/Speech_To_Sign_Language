@@ -34,7 +34,6 @@ def uplaodSpeech():
             text_base64_string = "No Pose Could be made"
         try:
             os.remove(r"D:\FYP APP\STSL - APP\stsl\backend\API\audio.wav")
-            os.remove(r"D:\FYP APP\STSL - APP\stsl\backend\API\audio.m4a")
             os.remove(r"D:\FYP APP\STSL - APP\stsl\backend\API\merged.mp4")
         except OSError:
             print("File Not Found")
@@ -52,6 +51,7 @@ def uplaodText():
                 text_base64 = base64.b64encode(videoFile.read())
             text_base64_string = str(text_base64)
             l = list(text_base64_string)
+            print(l)
             del(l[0], l[0], l[-1])
             text_base64_string = "".join(l)
         except OSError:
