@@ -21,7 +21,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 241, 247, 249),
       body: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -31,7 +30,6 @@ class _SplashScreenState extends State<SplashScreen> {
             "Pakistan Sign Express",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.black,
             ),
             textAlign: TextAlign.center,
           ),
