@@ -15,11 +15,11 @@ class WordsContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      height: MediaQuery.of(context).size.height * 0.1,
+      height: MediaQuery.of(context).size.height * 0.12,
       width: MediaQuery.of(context).size.width * 0.9,
       decoration: BoxDecoration(
         border: Border.all(
-          color: Colors.amber,
+          color: const Color(0xFF30847e),
           width: 1.5,
         ),
         borderRadius: BorderRadius.circular(20),
