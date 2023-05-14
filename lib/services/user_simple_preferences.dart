@@ -42,9 +42,4 @@ class UserSimplePreferences {
     dynamic obj = prefs.get(key);
     return obj;
   }
-
-  static Future<bool> deleteData(String key) async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.remove(key);
-  }
 }
