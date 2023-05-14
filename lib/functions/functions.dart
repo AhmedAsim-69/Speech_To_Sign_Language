@@ -1,58 +1,33 @@
-import 'dart:io' as io;
+import 'dart:async';
+import 'dart:io';
+
+import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:stsl/pages/speech_page.dart';
 
-import 'package:stsl/services/audio_player.dart';
 import 'package:stsl/services/audio_recorder.dart';
 
 class MyFunctions {
+  static File file = File("");
+  static final PlayerController controller = PlayerController();
+  static late StreamSubscription<PlayerState> playerStateSubscription;
+
   static Future<void> startRec() async {
-    if (!isRec && !isPause) {
+    if (!isRec) {
       isRec = true;
       await AudioRecorder.startRecording();
-    } else if (isRec && !isPause) {
-      isRec = true;
-      isPause = true;
-      await AudioRecorder.pauseRecording();
-    } else {
-      isRec = true;
-      isPause = false;
-      await AudioRecorder.resumeRecording();
     }
   }
 
   static Future<void> stopRec() async {
     if (isRec) {
       isRec = false;
-      isPause = false;
       await AudioRecorder.stopRecording();
+      await preparePlayer();
     }
-  }
-
-  static Future<void> playAudio() async {
-    if (isPlay) {
-      await AudioPlay.audioPlayer.pause();
-      isPlay = false;
-      AudioPlay.isPlaying = false;
-    } else {
-      await AudioPlay.audioPlayer.resume();
-      AudioPlay.isPlaying = true;
-      isPlay = true;
-    }
-  }
-
-  static Future<void> stopAudio() async {
-    await AudioPlay.audioPlayer.stop();
-    isPlay = false;
-  }
-
-  static Future<bool> doesFileExist(String fileName, String extension) async {
-    String dir = (await getExternalStorageDirectory())!.path;
-    var syncPath = "$dir/$fileName.$extension";
-    await io.File(syncPath).exists();
-    return io.File(syncPath).existsSync();
   }
 
   static Future initStorage() async {
@@ -63,6 +38,34 @@ class MyFunctions {
     }
     if (status.isDenied == true) {
       initStorage();
+    }
+  }
+
+  static Future<File> getFile() async {
+    String dir = (await getExternalStorageDirectory())!.path;
+    file = File('$dir/audio.wav');
+    return file;
+  }
+
+  static Future<void> preparePlayer([VoidCallback? updateBubbleFunc]) async {
+    String path = (await getExternalStorageDirectory())!.path;
+    file = await getFile();
+    if (file.existsSync()) {
+      controller.preparePlayer(
+        path: "$path/audio.wav",
+        shouldExtractWaveform: true,
+      );
+      controller
+          .extractWaveformData(
+        path: "$path/audio.wav",
+      )
+          .then((waveformData) {
+        debugPrint(waveformData.toString());
+      });
+    }
+
+    if (updateBubbleFunc != null) {
+      updateBubbleFunc();
     }
   }
 }
