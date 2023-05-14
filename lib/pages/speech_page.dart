@@ -1,9 +1,9 @@
-import 'dart:developer';
+import 'package:flutter/material.dart';
+
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:path_provider/path_provider.dart';
@@ -12,13 +12,13 @@ import 'package:provider/provider.dart';
 import 'package:stsl/functions/functions.dart';
 
 import 'package:stsl/services/api_call.dart';
-import 'package:stsl/services/audio_player.dart';
 import 'package:stsl/services/audio_recorder.dart';
-import 'package:stsl/services/chat_bubble.dart';
+import 'package:stsl/services/wave_bubble.dart';
 import 'package:stsl/services/user_simple_preferences.dart';
 import 'package:stsl/services/video_player.dart';
 
 import 'package:stsl/utils/theme_data.dart';
+import 'package:stsl/widgets/snackbar.dart';
 
 import 'package:stsl/widgets/video_button.dart';
 import 'package:stsl/widgets/words_container.dart';
@@ -33,32 +33,34 @@ class SpeechPage extends StatefulWidget {
 }
 
 bool isRec = false;
-bool isPause = false;
 bool isPlay = false;
-bool isSpeech = false;
 
 class _SpeechPageState extends State<SpeechPage> {
   final RecorderController recorderController = RecorderController();
 
-  String? path;
-  String? musicFile;
-  bool isRecording = false;
-  bool isRecordingCompleted = true;
-  bool isLoading = true;
+  bool _isDarkMode = false;
+  bool _isFormValid = true;
+  final _textEditingController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
 
-    // AudioRecorder.initRecorder();
-    // AudioPlay.setAudio();
+    UserSimplePreferences.readData('themeMode').then((value) {
+      var themeMode = value ?? 'light';
+      if (themeMode == 'light') {
+        _isDarkMode = false;
+      } else {
+        _isDarkMode = true;
+      }
+    });
+    AudioRecorder.initRecorder();
     MyFunctions.initStorage();
-    LocalVideoPlayer.videoController();
     ApiCall.wordsFound = UserSimplePreferences.getWords() ?? "";
     ApiCall.wordsNotFound = UserSimplePreferences.getNotWords() ?? "";
-    _audioFuncs();
+    LocalVideoPlayer.videoController();
     _initialiseControllers();
-    _getDir();
   }
 
   @override
@@ -67,56 +69,13 @@ class _SpeechPageState extends State<SpeechPage> {
     if (LocalVideoPlayer.chewieController != null) {
       LocalVideoPlayer.chewieController!.dispose();
     }
+    if (LocalVideoPlayer.chewieController1 != null) {
+      LocalVideoPlayer.chewieController1!.dispose();
+    }
+    if (LocalVideoPlayer.chewieController2 != null) {
+      LocalVideoPlayer.chewieController2!.dispose();
+    }
     super.dispose();
-  }
-
-  void _startOrStopRecording() async {
-    try {
-      if (isRecording) {
-        recorderController.reset();
-        final path = await recorderController.stop();
-
-        log("recording stopppeeeddd!!!");
-
-        if (path != null) {
-          isRecordingCompleted = true;
-          log("Recorded file size: ${File(path).lengthSync()}");
-          log(path);
-          log("IS RECORDING COMPLETED = $isRecordingCompleted");
-          _updateState();
-          // AudioPlay.setAudio();
-        }
-      } else {
-        // await recorderController.record();
-        await recorderController.record(
-            path:
-                '/storage/emulated/0/Android/data/com.example.stsl/files/audio.m4a');
-        log("file path is $path");
-      }
-    } catch (e) {
-      log(e.toString());
-    } finally {
-      setState(() {
-        isRecording = !isRecording;
-        _updateState();
-      });
-    }
-  }
-
-  void _refreshWave() {
-    if (isRecording) {
-      log("before");
-      recorderController.refresh();
-      log("refreshed");
-    }
-  }
-
-  void _getDir() async {
-    path = "${(await getExternalStorageDirectory())!.path}/audio.m4a";
-    isLoading = false;
-    setState(() {
-      log("path = $path");
-    });
   }
 
   void _initialiseControllers() {
@@ -127,135 +86,247 @@ class _SpeechPageState extends State<SpeechPage> {
       ..sampleRate = 44100;
   }
 
-  void _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      musicFile = result.files.single.path;
-      setState(() {});
-    } else {
-      log("File not picked");
-    }
-  }
-
-  void _audioFuncs() {
-    // int count = 0;
-    AudioPlay.audioPlayer.onDurationChanged.listen((newDuration) {
-      setState(() {
-        AudioPlay.duration = newDuration;
-      });
-    });
-    AudioPlay.audioPlayer.onPositionChanged.listen((newPosition) {
-      setState(() {
-        AudioPlay.position = newPosition;
-      });
-    });
-  }
-
   void _updateState() {
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final sizedBoxHeight = MediaQuery.of(context).size.height * 0.106;
+
     return Consumer<ThemeNotifier>(builder: (context, theme, _) {
       return Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text("Speech Page"),
+        ),
+        drawer: Drawer(
+            child: ListView(
+          children: [
+            Container(
+              height: 200,
+              decoration: const BoxDecoration(
+                color: Color(0xFF42a79d),
+                image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: NetworkImage(
+                        'https://oflutter.com/wp-content/uploads/2021/02/profile-bg3.jpg')),
+              ),
+              child: const Center(child: Text('Pakistan Sign Express')),
+            ),
+            SwitchListTile(
+                title: const Text("Dark Mode"),
+                value: _isDarkMode,
+                onChanged: (value) {
+                  _isDarkMode = value;
+                  if (_isDarkMode) {
+                    theme.setDarkMode();
+                  } else {
+                    theme.setLightMode();
+                  }
+                }),
+          ],
+        )),
         body: ModalProgressHUD(
-          color: Colors.black,
-          opacity: 0.4,
+          opacity: 0.8,
           blur: 1.0,
-          progressIndicator: const CircularProgressIndicator(
-            color: Colors.red,
-            backgroundColor: Colors.yellow,
+          progressIndicator: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              CircularProgressIndicator(),
+              Text(
+                "This may take a while...",
+                style: TextStyle(fontSize: 18),
+              )
+            ],
           ),
           inAsyncCall: ApiCall.isLoading,
-          child: Center(
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                WordsContainer(
-                    text: ApiCall.wordsFound,
-                    altText: "No Video Yet",
-                    poseText: "Pose Found for the following words: "),
+                Padding(
+                  padding: const EdgeInsets.only(top: 15.0),
+                  child: WordsContainer(
+                      text: ApiCall.wordsFound,
+                      altText: "No Video Yet",
+                      poseText: "Pose Found for the following words: "),
+                ),
+                SizedBox(
+                  height: sizedBoxHeight,
+                ),
                 WordsContainer(
                     text: ApiCall.wordsNotFound,
                     altText: "No Sentence Yet",
                     poseText: "Pose Not Found for the following words: "),
-                TextButton(
-                  onPressed: () async {
-                    await ApiCall.uploadSpeech(_updateState, context);
-                  },
-                  child: const Text(
-                    "Upload Speech",
+                SizedBox(
+                  height: sizedBoxHeight,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: const [
+                    VideoButton(text: "Play Human Video", isML: false),
+                    VideoButton(text: "Play Pose Video", isML: true),
+                  ],
+                ),
+                SizedBox(
+                  height: sizedBoxHeight,
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.93,
+                  height: 50,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color(0xFF42a79d),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Expanded(child: WaveBubble()),
+                      const VerticalDivider(
+                        thickness: 1,
+                        width: 2,
+                      ),
+                      IconButton(
+                        onPressed: () async {
+                          final path =
+                              (await getExternalStorageDirectory())!.path;
+                          if (mounted) {
+                            (File('$path/audio.wav').existsSync())
+                                ? await ApiCall.uploadSpeech(
+                                    _updateState, context)
+                                : ShowSnackbar.showsnackbar(
+                                    Colors.black54,
+                                    Colors.yellow,
+                                    Icons.warning,
+                                    "No Audio Recorded",
+                                    context);
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.upload,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const VideoButton(),
-                if (isRecordingCompleted) const WaveBubble(),
-                if (musicFile != null) const WaveBubble(),
-                SafeArea(
+                SizedBox(
+                  height: sizedBoxHeight,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 200),
-                        child: isRecording
-                            ? AudioWaveforms(
-                                enableGesture: true,
-                                size: Size(
-                                    MediaQuery.of(context).size.width / 2, 50),
-                                recorderController: recorderController,
-                                waveStyle: const WaveStyle(
-                                  waveColor: Colors.white,
-                                  extendWaveform: true,
-                                  showMiddleLine: false,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  color: const Color(0xFF1E1B26),
-                                ),
-                                padding: const EdgeInsets.only(left: 18),
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 15),
+                        child: isRec
+                            ? StreamBuilder<RecordingDisposition>(
+                                stream: AudioRecorder.recorder.onProgress,
+                                builder: (context, snapshot) {
+                                  final duration = snapshot.hasData
+                                      ? snapshot.data!.duration
+                                      : Duration.zero;
+                                  return Text(
+                                    "Recording: ${duration.inSeconds} s",
+                                    style: const TextStyle(
+                                        color: Colors.blueGrey,
+                                        fontSize: 14,
+                                        fontStyle: FontStyle.italic),
+                                  );
+                                },
                               )
                             : Container(
-                                width: MediaQuery.of(context).size.width / 1.7,
-                                height: 50,
+                                width: MediaQuery.of(context).size.width * 0.7,
+                                height: _isFormValid
+                                    ? MediaQuery.of(context).size.height * 0.06
+                                    : MediaQuery.of(context).size.height * 0.1,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF1E1B26),
-                                  borderRadius: BorderRadius.circular(12.0),
+                                  color:
+                                      _isFormValid ? Colors.red : Colors.black,
+                                  borderRadius: BorderRadius.circular(30.0),
                                 ),
-                                padding: const EdgeInsets.only(left: 18),
                                 margin:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                child: TextField(
-                                  readOnly: true,
-                                  decoration: InputDecoration(
-                                    hintText: "Type Something...",
-                                    hintStyle:
-                                        const TextStyle(color: Colors.white54),
-                                    contentPadding:
-                                        const EdgeInsets.only(top: 16),
-                                    border: InputBorder.none,
-                                    suffixIcon: IconButton(
-                                      onPressed: _pickFile,
-                                      icon: Icon(Icons.adaptive.share),
-                                      color: Colors.white54,
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                child: Form(
+                                  key: _formKey,
+                                  child: TextFormField(
+                                    controller: _textEditingController,
+                                    textAlign: TextAlign.left,
+                                    textAlignVertical: TextAlignVertical.center,
+                                    decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.fromLTRB(
+                                          15, 0, 0, 0),
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                      ),
+                                      hintText: "Type Something...",
+                                      hintStyle: const TextStyle(),
+                                      suffixIcon: IconButton(
+                                        onPressed: () async {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            _isFormValid = true;
+                                            await ApiCall.uploadText(
+                                                _textEditingController.text,
+                                                _updateState,
+                                                context);
+                                          } else {
+                                            _isFormValid = false;
+                                          }
+                                          setState(() {});
+                                        },
+                                        icon: const Icon(
+                                          Icons.send,
+                                        ),
+                                      ),
                                     ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter a word or sentence';
+                                      }
+                                      return null;
+                                    },
                                   ),
                                 ),
                               ),
                       ),
-                      IconButton(
-                        onPressed: _refreshWave,
-                        icon: Icon(
-                          isRecording ? Icons.refresh : Icons.send,
-                          color: Colors.white,
+                      FloatingActionButton.small(
+                        heroTag: " recorder",
+                        onPressed: (() {
+                          isRec
+                              ? MyFunctions.stopRec()
+                              : MyFunctions.startRec();
+                          _updateState();
+                          Future.delayed(
+                            const Duration(seconds: 2),
+                            (() {
+                              _updateState();
+                            }),
+                          );
+                        }),
+                        child: Icon(
+                          isRec ? Icons.stop : Icons.mic,
+                          size: 25,
                         ),
                       ),
-                      const SizedBox(width: 16),
-                      IconButton(
-                        onPressed: _startOrStopRecording,
-                        icon: Icon(isRecording ? Icons.stop : Icons.mic),
-                        color: Colors.white,
-                        iconSize: 28,
+                      FloatingActionButton.small(
+                        heroTag: "pose video",
+                        onPressed: () {},
+                        child: const Icon(
+                          Icons.front_hand_sharp,
+                          size: 25,
+                        ),
                       ),
                     ],
                   ),
