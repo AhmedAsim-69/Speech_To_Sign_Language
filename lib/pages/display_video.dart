@@ -23,7 +23,6 @@ class _DisplayVideoState extends State<DisplayVideo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
         leading: IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -33,7 +32,7 @@ class _DisplayVideoState extends State<DisplayVideo> {
                 LocalVideoPlayer.chewieController?.pause();
               });
             }),
-        title: const Text("Video Player!!"),
+        title: const Text("Sign Language"),
         centerTitle: true,
       ),
       body: (LocalVideoPlayer.chewieController == null)
@@ -41,18 +40,13 @@ class _DisplayVideoState extends State<DisplayVideo> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  CircularProgressIndicator(
-                    backgroundColor: Colors.yellow,
-                    color: Colors.red,
-                  ),
+                  CircularProgressIndicator(),
                   SizedBox(
                     height: 20,
                   ),
                   Text(
                     "No Video Found Yet",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(),
                   ),
                 ],
               ),
