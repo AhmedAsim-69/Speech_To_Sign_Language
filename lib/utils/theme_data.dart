@@ -20,6 +20,9 @@ class ThemeNotifier with ChangeNotifier {
       foregroundColor: Colors.black,
       iconTheme: IconThemeData(color: Colors.black),
     ),
+    drawerTheme: const DrawerThemeData(
+      backgroundColor: Color(0xFFF5F5F5),
+    ),
     bottomAppBarColor: Colors.white,
     iconTheme: const IconThemeData(color: Colors.black),
     textTheme: const TextTheme(
@@ -114,6 +117,9 @@ class ThemeNotifier with ChangeNotifier {
       color: Color(0xFF42a79d),
       foregroundColor: Color(0xFFF5F5F5),
       iconTheme: IconThemeData(color: Color(0xFFF5F5F5)),
+    ),
+    drawerTheme: const DrawerThemeData(
+      backgroundColor: Colors.black,
     ),
     bottomAppBarColor: Colors.black,
     iconTheme: const IconThemeData(color: Color(0xFFF5F5F5)),

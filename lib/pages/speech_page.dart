@@ -102,106 +102,105 @@ class _SpeechPageState extends State<SpeechPage> {
           title: const Text("Speech Page"),
         ),
         drawer: Drawer(
-            backgroundColor: Colors.black,
             child: ListView(
-              children: [
-                Container(
-                  height: 200,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF42a79d),
-                    image: DecorationImage(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(
-                            'https://oflutter.com/wp-content/uploads/2021/02/profile-bg3.jpg')),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
-                    child: Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Text('Pakistan Sign Express')),
-                  ),
-                ),
-                SwitchListTile(
-                    title: const Text("Dark Mode"),
-                    value: _isDarkMode,
-                    onChanged: (value) {
-                      _isDarkMode = value;
-                      if (_isDarkMode) {
-                        theme.setDarkMode();
-                      } else {
-                        theme.setLightMode();
-                      }
-                    }),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.1,
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: SizedBox(
-                      height: 80,
-                      width: 80,
-                      child: Image.asset(
-                        'assets/logos/uet_logo.png',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+          children: [
+            Container(
+              height: 200,
+              decoration: const BoxDecoration(
+                color: Color(0xFF42a79d),
+                image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: NetworkImage(
+                        'https://oflutter.com/wp-content/uploads/2021/02/profile-bg3.jpg')),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
+                child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text('Pakistan Sign Express')),
+              ),
+            ),
+            SwitchListTile(
+                title: const Text("Dark Mode"),
+                value: _isDarkMode,
+                onChanged: (value) {
+                  _isDarkMode = value;
+                  if (_isDarkMode) {
+                    theme.setDarkMode();
+                  } else {
+                    theme.setLightMode();
+                  }
+                }),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.1,
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SizedBox(
+                  height: 80,
+                  width: 80,
+                  child: Image.asset(
+                    'assets/logos/uet_logo.png',
+                    fit: BoxFit.contain,
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
-                  child: Text(
-                    "University of Engineering and Technology, Lahore",
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const Divider(),
-                const Text(
-                  "2019-FYP-13",
-                  textAlign: TextAlign.center,
-                ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(15, 5, 15, 0),
-                  child: Text(
-                    "Real-time Speech-to-Pakistan Sign Language using Neural Networks",
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const Divider(),
-                const Text(
-                  "Supervised By:",
-                  textAlign: TextAlign.center,
-                ),
-                const Text(
-                  "Prof. Dr. Kashif Javed",
-                  textAlign: TextAlign.center,
-                ),
-                const Divider(),
-                const Text(
-                  "2019-EE-31: Ahmed Asim",
-                  textAlign: TextAlign.center,
-                ),
-                const Text(
-                  "2019-EE-27: Muhammad Ashar Khan",
-                  textAlign: TextAlign.center,
-                ),
-                const Text(
-                  "2019-EE-51: Aimon Humayun",
-                  textAlign: TextAlign.center,
-                ),
-                const Divider(),
-                const Text(
-                  "App Developer: Ahmed Asim",
-                  textAlign: TextAlign.center,
-                ),
-                const Text(
-                  "Email: ahmedk082@gmail.com ",
-                  textAlign: TextAlign.center,
-                ),
-                const Divider(),
-              ],
-            )),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+              child: Text(
+                "University of Engineering and Technology, Lahore",
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const Divider(),
+            const Text(
+              "2019-FYP-13",
+              textAlign: TextAlign.center,
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(15, 5, 15, 0),
+              child: Text(
+                "Real-time Speech-to-Pakistan Sign Language using Neural Networks",
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const Divider(),
+            const Text(
+              "Supervised By:",
+              textAlign: TextAlign.center,
+            ),
+            const Text(
+              "Prof. Dr. Kashif Javed",
+              textAlign: TextAlign.center,
+            ),
+            const Divider(),
+            const Text(
+              "2019-EE-31: Ahmed Asim",
+              textAlign: TextAlign.center,
+            ),
+            const Text(
+              "2019-EE-27: Muhammad Ashar Khan",
+              textAlign: TextAlign.center,
+            ),
+            const Text(
+              "2019-EE-51: Aimon Humayun",
+              textAlign: TextAlign.center,
+            ),
+            const Divider(),
+            const Text(
+              "App Developer: Ahmed Asim",
+              textAlign: TextAlign.center,
+            ),
+            const Text(
+              "Email: ahmedk082@gmail.com ",
+              textAlign: TextAlign.center,
+            ),
+            const Divider(),
+          ],
+        )),
         body: ModalProgressHUD(
           opacity: 0.8,
           blur: 1.0,
