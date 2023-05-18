@@ -23,19 +23,19 @@ import 'package:stsl/widgets/snackbar.dart';
 import 'package:stsl/widgets/video_button.dart';
 import 'package:stsl/widgets/words_container.dart';
 
-class SpeechPage extends StatefulWidget {
-  const SpeechPage({
+class HomePage extends StatefulWidget {
+  const HomePage({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<SpeechPage> createState() => _SpeechPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 bool isRec = false;
 bool isPlay = false;
 
-class _SpeechPageState extends State<SpeechPage> {
+class _HomePageState extends State<HomePage> {
   final RecorderController recorderController = RecorderController();
 
   bool _isDarkMode = false;
@@ -72,9 +72,7 @@ class _SpeechPageState extends State<SpeechPage> {
     if (LocalVideoPlayer.chewieController1 != null) {
       LocalVideoPlayer.chewieController1!.dispose();
     }
-    if (LocalVideoPlayer.chewieController2 != null) {
-      LocalVideoPlayer.chewieController2!.dispose();
-    }
+
     super.dispose();
   }
 
@@ -96,10 +94,10 @@ class _SpeechPageState extends State<SpeechPage> {
 
     return Consumer<ThemeNotifier>(builder: (context, theme, _) {
       return Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           centerTitle: true,
-          title: const Text("Speech Page"),
+          title: const Text("Pakistan Sign Express"),
         ),
         drawer: Drawer(
             child: ListView(
@@ -109,9 +107,10 @@ class _SpeechPageState extends State<SpeechPage> {
               decoration: const BoxDecoration(
                 color: Color(0xFF42a79d),
                 image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: NetworkImage(
-                        'https://oflutter.com/wp-content/uploads/2021/02/profile-bg3.jpg')),
+                  fit: BoxFit.fill,
+                  image: NetworkImage(
+                      'https://oflutter.com/wp-content/uploads/2021/02/profile-bg3.jpg'),
+                ),
               ),
               child: const Padding(
                 padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
@@ -209,8 +208,11 @@ class _SpeechPageState extends State<SpeechPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: const [
               CircularProgressIndicator(),
+              SizedBox(
+                height: 20,
+              ),
               Text(
-                "This may take a while...",
+                "This may take a few minutes...",
                 style: TextStyle(fontSize: 18),
               )
             ],
@@ -226,16 +228,18 @@ class _SpeechPageState extends State<SpeechPage> {
                   padding: const EdgeInsets.only(top: 15.0),
                   child: WordsContainer(
                       text: ApiCall.wordsFound,
-                      altText: "No Video Yet",
-                      poseText: "Pose Found for the following words: "),
+                      altText: "No Sign Language",
+                      poseText:
+                          "Sign Language found for the following words: "),
                 ),
                 SizedBox(
                   height: sizedBoxHeight,
                 ),
                 WordsContainer(
                     text: ApiCall.wordsNotFound,
-                    altText: "No Sentence Yet",
-                    poseText: "Pose Not Found for the following words: "),
+                    altText: "No Sign Language",
+                    poseText:
+                        "Sign Language Not Found for the following words: "),
                 SizedBox(
                   height: sizedBoxHeight,
                 ),
@@ -273,9 +277,10 @@ class _SpeechPageState extends State<SpeechPage> {
                           final path =
                               (await getExternalStorageDirectory())!.path;
                           if (mounted) {
-                            (File('$path/audio.wav').existsSync())
-                                ? await ApiCall.uploadSpeech(
-                                    _updateState, context)
+                            File audio = File('$path/audio.wav');
+                            (audio.existsSync())
+                                ? await ApiCall.uploadSpeech(audio, null, true,
+                                    false, false, _updateState, context)
                                 : ShowSnackbar.showsnackbar(
                                     Colors.black54,
                                     Colors.yellow,
@@ -334,6 +339,7 @@ class _SpeechPageState extends State<SpeechPage> {
                                   key: _formKey,
                                   child: TextFormField(
                                     controller: _textEditingController,
+                                    enableInteractiveSelection: false,
                                     textAlign: TextAlign.left,
                                     textAlignVertical: TextAlignVertical.center,
                                     decoration: InputDecoration(
@@ -350,8 +356,12 @@ class _SpeechPageState extends State<SpeechPage> {
                                           if (_formKey.currentState!
                                               .validate()) {
                                             _isFormValid = true;
-                                            await ApiCall.uploadText(
+                                            await ApiCall.uploadSpeech(
+                                                null,
                                                 _textEditingController.text,
+                                                false,
+                                                true,
+                                                false,
                                                 _updateState,
                                                 context);
                                           } else {
@@ -395,7 +405,35 @@ class _SpeechPageState extends State<SpeechPage> {
                       ),
                       FloatingActionButton.small(
                         heroTag: "pose video",
-                        onPressed: () {},
+                        onPressed: () async {
+                          if (_textEditingController.text.isNotEmpty) {
+                            _isFormValid = true;
+                            await ApiCall.uploadSpeech(
+                                null,
+                                _textEditingController.text,
+                                false,
+                                true,
+                                true,
+                                _updateState,
+                                context);
+                          } else {
+                            final path =
+                                (await getExternalStorageDirectory())!.path;
+                            if (mounted) {
+                              File audio = File('$path/audio.wav');
+                              (audio.existsSync())
+                                  ? await ApiCall.uploadSpeech(audio, null,
+                                      true, false, true, _updateState, context)
+                                  : ShowSnackbar.showsnackbar(
+                                      Colors.black54,
+                                      Colors.yellow,
+                                      Icons.warning,
+                                      "No Audio Recorded",
+                                      context);
+                            }
+                          }
+                          setState(() {});
+                        },
                         child: const Icon(
                           Icons.front_hand_sharp,
                           size: 25,

@@ -29,10 +29,17 @@ class WordsContainer extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child: Center(
-            child: Text((text == "")
-                ? altText
-                : '''$poseText: 
-            $text'''),
+            child: Column(
+              children: [
+                Text((text == "") ? altText : poseText),
+                (text == "")
+                    ? const Text("")
+                    : Padding(
+                        padding: const EdgeInsets.all(2.0),
+                        child: Text(text),
+                      ),
+              ],
+            ),
           ),
         ),
       ),

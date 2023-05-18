@@ -6,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'package:stsl/pages/speech_page.dart';
+import 'package:stsl/pages/homepage.dart';
 
 import 'package:stsl/services/audio_recorder.dart';
 

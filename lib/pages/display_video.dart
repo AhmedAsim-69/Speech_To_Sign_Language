@@ -23,6 +23,7 @@ class _DisplayVideoState extends State<DisplayVideo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         leading: IconButton(
             icon: const Icon(Icons.arrow_back),

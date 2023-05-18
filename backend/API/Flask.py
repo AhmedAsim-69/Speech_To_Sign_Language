@@ -1,8 +1,6 @@
 import sys
-sys.path.append(r'D:\FYP APP\STSL - APP\stsl\backend')
-sys.path.append(r'D:\FYP APP\STSL - APP\stsl\backend\API')
-sys.path.append(r'D:\FYP APP\STSL - APP\stsl\backend\speech_processing')
-import temp_processing
+sys.path.append(r'D:\FYP APP\STSL - APP\stsl\backend\Processing')
+import Processing
 from flask import Flask, request
 import werkzeug
 from moviepy.editor import *
@@ -19,50 +17,55 @@ async def root():
 @app.route('/uploadSpeech', methods=['POST'])
 def uplaodSpeech():
     if(request.method == 'POST'):
-        speech = request.files['speech']
-        filename = werkzeug.utils.secure_filename(speech.filename)
-        speech.save('D:/FYP APP/STSL - APP/stsl/backend/API/' + filename)
-        sentence, words_not_found = temp_processing.processing()
+        skeletonPose_string = "No Skeleton"
+        isAudio = request.form.get('isAudio') == 'true'
+        isText = request.form.get('isText') == 'true'
+        isPose = request.form.get('isPose') == 'true'
+        text = request.form.get('text')
+        audio = request.files.get('audio')
+        if audio:
+            filename = werkzeug.utils.secure_filename(audio.filename)
+            audio.save(rf"D:\FYP APP\STSL - APP\stsl\backend\Data\{filename}")
+        print(f"isAudio = {isAudio}, isText = {isText}, isPose = {isPose}, Text = {text}")
+        sentence, words_not_found = Processing.processing(text, isAudio, isText, isPose)
         try:
-            with open(r"D:\FYP APP\STSL - APP\stsl\backend\API\merged.mp4", "rb") as videoFile:
-                text_base64 = base64.b64encode(videoFile.read())
-            text_base64_string = str(text_base64)
-            l = list(text_base64_string)
+            with open(r"D:\FYP APP\STSL - APP\stsl\backend\Data\Sign.mp4", "rb") as videoFile:
+                humanPose = base64.b64encode(videoFile.read())
+            humanPose_string = str(humanPose)
+            l = list(humanPose_string)
             del(l[0], l[0], l[-1])
-            text_base64_string = "".join(l)
+            humanPose_string = "".join(l)
         except OSError:
-            text_base64_string = "No Pose Could be made"
+            humanPose_string = "No Pose Could be made"
+
+        if isPose:
+            try:
+                with open(r"D:\FYP APP\STSL - APP\stsl\backend\Data\Pose.mp4", "rb") as videoFile:
+                    skeletonPose = base64.b64encode(videoFile.read())
+                skeletonPose_string = str(skeletonPose)
+                l = list(skeletonPose_string)
+                del(l[0], l[0], l[-1])
+                skeletonPose_string = "".join(l)
+            except OSError:
+                skeletonPose_string = "No Skeleton"
         try:
-            os.remove(r"D:\FYP APP\STSL - APP\stsl\backend\API\audio.wav")
-            os.remove(r"D:\FYP APP\STSL - APP\stsl\backend\API\merged.mp4")
+            os.remove(r"D:\FYP APP\STSL - APP\stsl\backend\Data\audio.wav")
         except OSError:
             print("File Not Found")
-        print("\n ---------------------------\nAll Done, Returning\n ---------------------------\n")
-        return ({"message": text_base64_string, "sentence": sentence, "words_not_found": words_not_found})
-
-
-@app.route('/uploadText', methods=['POST'])
-def uplaodText():
-    if(request.method == 'POST'):
-        text = request.args['text']
-        sentence, words_not_found = temp_processing.processing(text)
         try:
-            with open(r"D:\FYP APP\STSL - APP\stsl\backend\API\merged.mp4", "rb") as videoFile:
-                text_base64 = base64.b64encode(videoFile.read())
-            text_base64_string = str(text_base64)
-            l = list(text_base64_string)
-            print(l)
-            del(l[0], l[0], l[-1])
-            text_base64_string = "".join(l)
-        except OSError:
-            text_base64_string = "No Pose Could be made"
-        try:
-            os.remove(r"D:\FYP APP\STSL - APP\stsl\backend\API\merged.mp4")
+            os.remove(r"D:\FYP APP\STSL - APP\stsl\backend\Data\Sign.mp4")
         except OSError:
             print("File Not Found")
+        try:
+            os.remove(r"D:\FYP APP\STSL - APP\stsl\backend\Data\Pose.mp4")
+        except OSError:
+            print("File Not Found")
+        
         print("\n ---------------------------\nAll Done, Returning\n ---------------------------\n")
-        return ({"message": text_base64_string, "sentence": sentence, "words_not_found": words_not_found})
-
+        return ({"humanPose" : humanPose_string, 
+                 "skeletonPose" : skeletonPose_string, 
+                 "sentence": sentence, 
+                 "words_not_found": words_not_found})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug = True, port=4000)
