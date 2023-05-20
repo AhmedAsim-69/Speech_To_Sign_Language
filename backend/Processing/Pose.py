@@ -274,7 +274,7 @@ def plot(path):
         Points.append(keypoints)
     video.release()
     elapsed_time = time.time() - start_time
-    print("Time taken in extracting: ", elapsed_time)
+    print(f"Time Taken to Generate Pose Sign Language is: {elapsed_time}\n")
     print("Plotting Pose Output...")
     plot_video(
         Points,

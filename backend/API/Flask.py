@@ -1,10 +1,11 @@
+import base64
+from flask import Flask, request
+from moviepy.editor import *
 import sys
+import time
+import werkzeug
 sys.path.append(r'D:\FYP APP\STSL - APP\stsl\backend\Processing')
 import Processing
-from flask import Flask, request
-import werkzeug
-from moviepy.editor import *
-import base64
 
 app = Flask(__name__)
 
@@ -17,6 +18,7 @@ async def root():
 @app.route('/uploadSpeech', methods=['POST'])
 def uplaodSpeech():
     if(request.method == 'POST'):
+        start_time = time.time()
         skeletonPose_string = "No Skeleton"
         isAudio = request.form.get('isAudio') == 'true'
         isText = request.form.get('isText') == 'true'
@@ -62,6 +64,8 @@ def uplaodSpeech():
             print("File Not Found")
         
         print("\n ---------------------------\nAll Done, Returning\n ---------------------------\n")
+        elapsed_time = time.time() - start_time
+        print(f"Total Response Time is: {elapsed_time}\n")
         return ({"humanPose" : humanPose_string, 
                  "skeletonPose" : skeletonPose_string, 
                  "sentence": sentence, 

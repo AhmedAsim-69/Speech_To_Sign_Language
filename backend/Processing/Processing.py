@@ -3,19 +3,21 @@ Created on Sat Oct 22 15:52:00 2022
 
 @author: ahmed
 """
+from googletrans import Translator
+from moviepy.editor import *
+from nltk.tokenize import word_tokenize
+import speech_recognition as sr
+import time
+from translate import Translator as tTranslator
+from urduhack.models.lemmatizer import lemmatizer
 import sys
 sys.path.append(r'D:\FYP APP\STSL - APP\stsl\backend')
 sys.path.append(r'D:\FYP APP\STSL - APP\stsl\backend\API')
 sys.path.append(r'D:\FYP APP\STSL - APP\stsl\backend\Processing')
 import Pose
-from moviepy.editor import *
-from urduhack.models.lemmatizer import lemmatizer
-from nltk.tokenize import word_tokenize
-import speech_recognition as sr
-from googletrans import Translator
-from translate import Translator as tTranslator
 
 def takecommand(text, isAudio, isText):
+
     r = sr.Recognizer()
     try:
         if isText:
@@ -91,6 +93,8 @@ def videoFormation(sentence):
 
 
 def processing(text, isAudio, isText, isPose):
+    start_time = time.time()
+
     translator = Translator()
 
     print("The text is being translated into 'Urdu' Language.\n")
@@ -105,18 +109,15 @@ def processing(text, isAudio, isText, isPose):
     TEST_SENTENCE = text
     filtered_sentence = ""
 
-    LEMM_TEST_SENTENCE = lemitize_str(TEST_SENTENCE)
-
-    print("----------------------------------------")
-    print("Lemmatized Sentence is: ", LEMM_TEST_SENTENCE)
-    print("----------------------------------------")
-
-    filtered_sentence = word_tokenize(LEMM_TEST_SENTENCE)
+    filtered_sentence = word_tokenize(TEST_SENTENCE)
     
+    print("----------------------------------------")    
     print("After removing stopwords, Sentence is: ", filtered_sentence)
     print("----------------------------------------")
 
     words_found, words_not_found = videoFormation(filtered_sentence)
+    elapsed_time = time.time() - start_time
+    print(f"Time Taken to Generate Human Sign Language is: {elapsed_time}\n")
 
     if isPose:
         Pose.plot(r"D:\FYP APP\STSL - APP\stsl\backend\Data\Sign.mp4")
