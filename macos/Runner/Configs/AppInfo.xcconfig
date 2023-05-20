@@ -8,7 +8,7 @@
 PRODUCT_NAME = stsl
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.stsl
+PRODUCT_BUNDLE_IDENTIFIER = com.example.PakistanSignExpress
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2023 com.example. All rights reserved.
