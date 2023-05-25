@@ -6,11 +6,13 @@ class WordsContainer extends StatelessWidget {
     required this.text,
     required this.altText,
     required this.poseText,
+    this.textClr,
   }) : super(key: key);
 
   final String text;
   final String altText;
   final String poseText;
+  final Color? textClr;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,12 +33,18 @@ class WordsContainer extends StatelessWidget {
           child: Center(
             child: Column(
               children: [
-                Text((text == "") ? altText : poseText),
+                Text(
+                  (text == "") ? altText : poseText,
+                  style: TextStyle(color: textClr),
+                ),
                 (text == "")
                     ? const Text("")
                     : Padding(
                         padding: const EdgeInsets.all(2.0),
-                        child: Text(text),
+                        child: Text(
+                          text,
+                          style: TextStyle(color: textClr),
+                        ),
                       ),
               ],
             ),
