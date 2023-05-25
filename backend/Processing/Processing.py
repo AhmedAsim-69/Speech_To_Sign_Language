@@ -42,7 +42,7 @@ def takecommand(text, isAudio, isText):
 
 def videoFormation(sentence):
     clip0 = VideoFileClip(
-        r"D:\UNIVERSITY Stuff\FYP - Work\DATASET USABLE\40.mp4")
+        r"D:\UNIVERSITY Stuff\FYP\FYP - Work\DATASET USABLE\40.mp4")
     final = clip0.subclip(0, 0)
     words_found = ""
     words_not_found = []
@@ -60,9 +60,9 @@ def videoFormation(sentence):
             if(start_index < end_index):
                 file_name = " ".join(sentence[start_index : end_index])
                 print(f"Searching for: {file_name}")
-                if os.path.isfile(fr"D:\UNIVERSITY Stuff\FYP - Work\DATASET USABLE\{file_name + '.mp4'}"):
+                if os.path.isfile(fr"D:\UNIVERSITY Stuff\FYP\FYP - Work\DATASET USABLE\{file_name + '.mp4'}"):
                     skip = (end_index) - (start_index) - 1                     
-                    clip = VideoFileClip(fr"D:\UNIVERSITY Stuff\FYP - Work\DATASET USABLE\{file_name + '.mp4'}")
+                    clip = VideoFileClip(fr"D:\UNIVERSITY Stuff\FYP\FYP - Work\DATASET USABLE\{file_name + '.mp4'}")
                     final = concatenate_videoclips([final, clip])
                     print(f"Sign found")
                     words_found += f"{file_name} "
