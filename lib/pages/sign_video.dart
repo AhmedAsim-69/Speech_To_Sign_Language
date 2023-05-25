@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:chewie/chewie.dart';
-import 'package:stsl/services/api_call.dart';
 
-import 'package:stsl/services/pose_video_player.dart';
-import 'package:stsl/widgets/words_container.dart';
+import 'package:stsl/services/sign_video_player.dart';
 
-class PoseVideo extends StatelessWidget {
-  const PoseVideo({
+class SignVideo extends StatelessWidget {
+  const SignVideo({
     Key? key,
   }) : super(key: key);
 
@@ -19,18 +17,18 @@ class PoseVideo extends StatelessWidget {
           leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                if (PoseVideoPlayer.poseController != null) {
-                  PoseVideoPlayer.poseController!.pause();
+                if (SignVideoPlayer.signController != null) {
+                  SignVideoPlayer.signController!.pause();
                 }
                 Navigator.of(context).pop();
               }),
-          title: const Text("Pose Video"),
+          title: const Text("Sign Video"),
           centerTitle: true,
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            (PoseVideoPlayer.poseController == null)
+            (SignVideoPlayer.signController == null)
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -49,20 +47,12 @@ class PoseVideo extends StatelessWidget {
                     ),
                   )
                 : Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: WordsContainer(
-                            text: ApiCall.poseWordsFound,
-                            altText: "No Sign Language",
-                            poseText: "Pose found for: ",
-                            textClr: Colors.white),
-                      ),
                       SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.7,
+                        height: MediaQuery.of(context).size.height * 0.85,
                         child:
-                            Chewie(controller: PoseVideoPlayer.poseController!),
+                            Chewie(controller: SignVideoPlayer.signController!),
                       ),
                     ],
                   ),
