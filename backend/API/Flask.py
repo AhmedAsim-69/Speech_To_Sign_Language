@@ -65,7 +65,10 @@ def uplaodSpeech():
         
         print("\n ---------------------------\nAll Done, Returning\n ---------------------------\n")
         elapsed_time = time.time() - start_time
-        print(f"Total Response Time is: {elapsed_time}\n")
+        print("\n-----------------------------------------")
+        print(f"\nTotal Response Time is: {elapsed_time}")
+        print("\n-----------------------------------------")
+
         return ({"humanPose" : humanPose_string, 
                  "skeletonPose" : skeletonPose_string, 
                  "sentence": sentence, 
