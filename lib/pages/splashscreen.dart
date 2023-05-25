@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:stsl/pages/gif_page.dart';
 
 class SplashScreen extends StatelessWidget {
