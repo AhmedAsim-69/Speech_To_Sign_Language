@@ -9,7 +9,7 @@ from nltk.tokenize import word_tokenize
 import speech_recognition as sr
 import time
 from translate import Translator as tTranslator
-from urduhack.models.lemmatizer import lemmatizer
+import re
 import sys
 sys.path.append(r'D:\FYP APP\STSL - APP\stsl\backend')
 sys.path.append(r'D:\FYP APP\STSL - APP\stsl\backend\API')
@@ -19,6 +19,7 @@ import Pose
 def takecommand(text, isAudio, isText):
 
     r = sr.Recognizer()
+    print("\n-----------------------------------------")
     try:
         if isText:
             print("Recognizing the text speech input.....")
@@ -33,33 +34,23 @@ def takecommand(text, isAudio, isText):
             temp = r.recognize_google(audio1, language = 'ur-PK')
 
         print("\n-----------------------------------------")
-        print(f"The User said: {temp}.")
-        print("-----------------------------------------\n")
-    except Exception as e:
-        print("\nPlease repeat the sentence \n", e)
+        print(f"The translated sentence is: {temp}.")
+        print("-----------------------------------------")
+    except Exception:
         return "None"
     return temp
 
-def lemitize_str(STRING):
-    """Function printing python version."""
-
-    lemme_str = ""
-    temp = lemmatizer.lemma_lookup(STRING)
-    for t in temp:
-        lemme_str += t[1] + " "
-    return lemme_str
-
 def videoFormation(sentence):
     clip0 = VideoFileClip(
-        r"D:\UNIVERSITY Stuff\FYP - Work\Dataset Lemmatized\40.mp4")
+        r"D:\UNIVERSITY Stuff\FYP - Work\DATASET USABLE\40.mp4")
     final = clip0.subclip(0, 0)
     words_found = ""
     words_not_found = []
     isEmpty = True
-    file_found = False
     l  = len(sentence)
     skip = 0
-    for i in range(l, 0, -1): #9
+    print("\n-----------------------------------------")
+    for i in range(l, 0, -1): 
         for j in range(len(sentence)):
             start_index = l - i
             end_index = l - j
@@ -68,26 +59,30 @@ def videoFormation(sentence):
                 break
             if(start_index < end_index):
                 file_name = " ".join(sentence[start_index : end_index])
-                if os.path.isfile(fr"D:\UNIVERSITY Stuff\FYP - Work\Dataset Not Lemmatized\{file_name + '.mp4'}"):
+                print(f"Searching for: {file_name}")
+                if os.path.isfile(fr"D:\UNIVERSITY Stuff\FYP - Work\DATASET USABLE\{file_name + '.mp4'}"):
                     skip = (end_index) - (start_index) - 1                     
-                    clip = VideoFileClip(fr"D:\UNIVERSITY Stuff\FYP - Work\Dataset Not Lemmatized\{file_name + '.mp4'}")
+                    clip = VideoFileClip(fr"D:\UNIVERSITY Stuff\FYP - Work\DATASET USABLE\{file_name + '.mp4'}")
                     final = concatenate_videoclips([final, clip])
+                    print(f"Sign found")
                     words_found += f"{file_name} "
                     isEmpty = False
-                    file_found = True
                     break
-
-    if not file_found:
-        print("No matching file found.")
-    else:
-        print("Output video file created with the following words: ", words_found)
-    print("Words found: ", words_found)
+    print("-----------------------------------------")
+    
+    
     for x in sentence:
         if x not in list(words_found.split(" ")):
             words_not_found.append(x)
-
+    if len(words_not_found) == 0:
+        print("\nSign found for all words")
+    else:
+        print(f"\nNo sign found for: {' '.join(words_not_found)}")
+    print("\n-----------------------------------------\n")
     if(isEmpty == False):
         final.write_videofile(r"D:\FYP APP\STSL - APP\stsl\backend\Data\Sign.mp4")
+    print(f"\nOutput video file created with the following words: {words_found}\n")
+    print("-----------------------------------------")
     print()
     return[" ".join(list(words_found.split(" "))), " ".join(words_not_found)]
 
@@ -97,29 +92,32 @@ def processing(text, isAudio, isText, isPose):
 
     translator = Translator()
 
-    print("The text is being translated into 'Urdu' Language.\n")
+    print("The text is being translated into 'Urdu' Language.")
     to_lang = 'ur'
 
     text_to_translate = translator.translate(takecommand(text, isAudio, isText), dest=to_lang)
 
     text = text_to_translate.text
-    print("Urdu Translated sentence is: ", text)
+    text = re.sub(r'[^\w\s]', '', text)
 
-   
+    print("The user said: ", text)
+
     TEST_SENTENCE = text
     filtered_sentence = ""
 
     filtered_sentence = word_tokenize(TEST_SENTENCE)
     
     print("----------------------------------------")    
-    print("After removing stopwords, Sentence is: ", filtered_sentence)
+    print("After tokenizing, the sentence is: ", filtered_sentence)
     print("----------------------------------------")
 
     words_found, words_not_found = videoFormation(filtered_sentence)
     elapsed_time = time.time() - start_time
     print(f"Time Taken to Generate Human Sign Language is: {elapsed_time}\n")
+    print("----------------------------------------\n")
 
     if isPose:
         Pose.plot(r"D:\FYP APP\STSL - APP\stsl\backend\Data\Sign.mp4")
+        print("\n----------------------------------------\n")
     
     return[words_found, words_not_found]

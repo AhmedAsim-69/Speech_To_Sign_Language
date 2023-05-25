@@ -43,7 +43,7 @@ def plot_video(joints, file_path, video_name, a_p, skip_frames=1):
     pred_kpts = []
 
     # Create video template
-    FPS = 45 // skip_frames
+    FPS = 30 // skip_frames
     video_file = file_path + r"{}.mp4".format(video_name.split(".")[0])
     fourcc = cv2.VideoWriter_fourcc("m", "p", "4", "v")
     video = cv2.VideoWriter(video_file, fourcc, float(FPS), (650, 650), True)
@@ -60,6 +60,7 @@ def plot_video(joints, file_path, video_name, a_p, skip_frames=1):
 
         # Reduce the frame joints down to 2D for visualisation
         frame_joints_2d = np.reshape(frame_joints, (48, 3))[:, :2]
+
         # Draw the frame given 2D joints
         draw_frame_2D(frame, frame_joints_2d)
 
@@ -102,6 +103,7 @@ def plot_video(joints, file_path, video_name, a_p, skip_frames=1):
 
     # Release the video
 
+    print(f"The no. of frames in this video are: {num_frames}")
     video.release()
 
 
@@ -115,7 +117,6 @@ def draw_frame_2D(frame, joints):
     skeleton = getSkeletalModelStructure()
     skeleton = np.array(skeleton)
     number = skeleton.shape[0]
-    # print(skeleton)
     # Increase the size and position of the joints
     joints = joints * 10 * 4 * 2
     joints = joints + np.ones((48, 2)) * offset
@@ -191,57 +192,25 @@ def getSkeletalModelStructure():
         # lower right arm
         (3, 5),
         # left hand thumb
-        (6, 7),
-        (7, 8),
-        (8, 9),
-        (9, 10),
+        (6, 7), (7, 8), (8, 9), (9, 10),
         # left hand index finger
-        (6, 11),
-        (11, 12),
-        (12, 13),
-        (13, 14),
+        (6, 11), (11, 12), (12, 13), (13, 14),
         # left hand middle finger
-        (11, 15),
-        (15, 16),
-        (16, 17),
-        (17, 18),
+        (11, 15), (15, 16), (16, 17), (17, 18),
         # left hand ring finger
-        (15, 19),
-        (19, 20),
-        (20, 21),
-        (21, 22),
-        # left hand pinky
-        (6, 23),
-        (19, 23),
-        (23, 24),
-        (24, 25),
-        (25, 26),
+        (15, 19), (19, 20), (20, 21), (21, 22),
+        # left hand little finger
+        (6, 23), (19, 23), (23, 24), (24, 25), (25, 26),
         # right hand thumb
-        (27, 28),
-        (28, 29),
-        (29, 30),
-        (30, 31),
+        (27, 28), (28, 29), (29, 30), (30, 31),
         # right hand idex finger
-        (27, 32),
-        (32, 33),
-        (33, 34),
-        (34, 35),
+        (27, 32), (32, 33), (33, 34), (34, 35),
         # right hand middle finger
-        (32, 36),
-        (36, 37),
-        (37, 38),
-        (38, 39),
+        (32, 36), (36, 37), (37, 38), (38, 39),
         # right hand ring finger
-        (36, 40),
-        (40, 41),
-        (41, 42),
-        (42, 43),
-        # right hand thumb
-        (27, 44),
-        (40, 44),
-        (44, 45),
-        (45, 46),
-        (46, 47),
+        (36, 40), (40, 41), (41, 42), (42, 43),
+        # right hand little finger
+        (27, 44), (40, 44), (44, 45), (45, 46), (46, 47),
     )
 
 
@@ -254,6 +223,7 @@ def plot(path):
     )
 
     video = cv2.VideoCapture(path)
+    print("\n-----------------------------------------\n")
     print("Extracting Keypoints...")
     start_time = time.time()
     while video.isOpened():
@@ -272,9 +242,9 @@ def plot(path):
         if is_zero:
             continue
         Points.append(keypoints)
+
+
     video.release()
-    elapsed_time = time.time() - start_time
-    print(f"Time Taken to Generate Pose Sign Language is: {elapsed_time}\n")
     print("Plotting Pose Output...")
     plot_video(
         Points,
@@ -283,4 +253,5 @@ def plot(path):
         a_p=2,
         skip_frames=1,
     )
-    print("Done")
+    elapsed_time = time.time() - start_time
+    print(f"Time Taken to Generate Pose Sign Language is: {elapsed_time}")
