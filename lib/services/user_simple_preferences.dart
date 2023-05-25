@@ -8,9 +8,14 @@ class UserSimplePreferences {
   }
 
   static const _wordsFound = 'wordsFound';
+  static const _poseWordsFound = 'poseWordsFound';
   static const _wordsNotFound = 'wordsNotFound';
 
   static Future storeWords(String words) async {
+    await _preferences.setString(_wordsFound, words);
+  }
+
+  static Future storePoseWords(String words) async {
     await _preferences.setString(_wordsFound, words);
   }
 
@@ -20,6 +25,10 @@ class UserSimplePreferences {
 
   static String? getWords() {
     return _preferences.getString(_wordsFound);
+  }
+
+  static String? getPoseWords() {
+    return _preferences.getString(_poseWordsFound);
   }
 
   static String? getNotWords() {
