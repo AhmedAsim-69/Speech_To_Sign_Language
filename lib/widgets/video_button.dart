@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:stsl/pages/display_video.dart';
+import 'package:stsl/pages/sign_video.dart';
 import 'package:stsl/pages/pose_video.dart';
 
 class VideoButton extends StatelessWidget {
@@ -32,7 +32,7 @@ class VideoButton extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    (isML) ? const MlVideo() : const DisplayVideo()),
+                    (isML) ? const PoseVideo() : const SignVideo()),
           );
         },
         child: Text(text),
