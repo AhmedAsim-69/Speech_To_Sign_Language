@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:stsl/services/sign_video_player.dart';
 import 'dart:io';
 
 import 'package:stsl/services/user_simple_preferences.dart';
-import 'package:stsl/services/video_player.dart';
+import 'package:stsl/services/pose_video_player.dart';
 
 import 'package:stsl/widgets/snackbar.dart';
 
@@ -14,6 +15,7 @@ class ApiCall {
   static String skeletonPose = "";
   static String wordsFound = "";
   static String wordsNotFound = "";
+  static String poseWordsFound = "";
   static bool isFetched = false;
   static bool isLoading = false;
 
@@ -52,7 +54,7 @@ class ApiCall {
     try {
       final response = await request.send();
 
-      if (response.statusCode == 200) {
+      if (response.statusCode >= 200 && (response.statusCode <= 299)) {
         http.Response res = await http.Response.fromStream(response);
 
         final resJson = jsonDecode(res.body);
@@ -61,10 +63,16 @@ class ApiCall {
         skeletonPose = resJson["skeletonPose"];
         wordsFound = resJson["sentence"].toString();
         wordsNotFound = resJson["words_not_found"].toString();
+        if (isPose) {
+          poseWordsFound = resJson["sentence"].toString();
+        }
 
         isFetched = true;
-        LocalVideoPlayer.videoController();
 
+        await SignVideoPlayer.videoController();
+        if (isPose) {
+          await PoseVideoPlayer.videoController();
+        }
         if (updateState != null) {
           UserSimplePreferences.storeWords(wordsFound);
           UserSimplePreferences.storeNotWords(wordsNotFound);
